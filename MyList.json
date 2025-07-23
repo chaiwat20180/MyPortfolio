@@ -29,16 +29,6 @@
     "tags": ["Web tools","Excel Editor"]
   },
   {
-    "title": "RandomLotteryNumber",
-    "name": "โปรแกรมสุ่มหมายเลขลอตเตอรี่ หากคิดไม่ออกก็มาใช้ที่นี่",
-    "ImagePreview": "images/RandomLotteryNumber.png",
-    "detail": "เครื่องมือสำหรับสุ่มหมายเลขลอตเตอรี่ โดยไม่ต้องใช้โปรแกรมอื่น",
-    "Links": [
-      { "name": "GitHub Pages", "url": "https://chaiwat20180.github.io/RandomLotteryNumber/" }
-    ],
-    "tags": ["Web tools","Lottery Number", "Random Number"]
-  }, 
-  {
     "title": "Data to Json Converter",
     "name": "เครื่องมือแปลงข้อมูลเป็น JSON อีกทั้งยังรองรับ SQL Formatter",
     "ImagePreview": "images/DataToJson.png",
