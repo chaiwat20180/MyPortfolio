@@ -7,7 +7,8 @@
     "Links": [
       { "name": "GitHub Pages", "url": "https://chaiwat20180.github.io/MySQLTools/" }
     ],
-    "tags": ["Web tools","MySQL"]
+    "tags": ["Web tools","MySQL"],
+    "IsActive": true
   },
   {
     "title": "RandomLotteryNumber",
@@ -17,7 +18,8 @@
     "Links": [
       { "name": "GitHub Pages", "url": "https://chaiwat20180.github.io/RandomLotteryNumber/" }
     ],
-    "tags": ["Web tools","Lottery Number", "Random Number"]
+    "tags": ["Web tools","Lottery Number", "Random Number"],
+    "IsActive": false
   }, {
     "title": "Excel Editor",
     "name": "Excel Editor สำหรับแก้ไขไฟล์ Excel และแปลงไฟล์",
@@ -26,7 +28,8 @@
     "Links": [
       { "name": "GitHub Pages", "url": "https://chaiwat20180.github.io/ExcelEditorByAi/" }
     ],
-    "tags": ["Web tools","Excel Editor"]
+    "tags": ["Web tools","Excel Editor"],
+    "IsActive": true
   },
   {
     "title": "Data to Json Converter",
@@ -36,7 +39,8 @@
     "Links": [
       { "name": "GitHub Pages", "url": "https://chaiwat20180.github.io/DataToJson/" }
     ],
-    "tags": ["Web tools","Data to Json Converter","SQL Formatter","JSON"]
+    "tags": ["Web tools","Data to Json Converter","SQL Formatter","JSON"],
+    "IsActive": true
   },
   {
     "title": "HexRangeCalculator",
@@ -46,7 +50,8 @@
     "Links": [
       { "name": "GitHub Pages", "url": "https://chaiwat20180.github.io/HexRangeCalculator/" }
     ],
-    "tags": ["Web tools","Hex Range Calculator","Hex","Decimal","Binary"]
+    "tags": ["Web tools","Hex Range Calculator","Hex","Decimal","Binary"],
+    "IsActive": true
   }
   
 
