@@ -2,7 +2,7 @@
   {
     "title": "MySQLTools",
     "name": "SQL Tools for where with IN",
-    "ImagePreview": "images/MySQLTools.png",
+    "ImagePreview": "images/MySqlTools.png",
     "detail": "เครื่องมือสำหรับจัดการคำสั่ง SQL โดยเฉพาะการสร้างคำสั่ง WHERE IN สำหรับ MySQL",
     "Links": [
       { "name": "GitHub Pages", "url": "https://chaiwat20180.github.io/MySQLTools/" }
