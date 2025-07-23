@@ -16,11 +16,11 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* ใช้ฟอนต์ Kanit เป็นหลัก */
+        /* ใช้ฟอนต์ Sarabun เป็นหลัก */
         body {
-            font-family: 'Kanit', sans-serif;
+            font-family: 'Sarabun', sans-serif;
         }
         /* ซ่อน scrollbar */
         .modal-content::-webkit-scrollbar {
@@ -217,7 +217,8 @@
 
             // 1. Fetch data
             $.getJSON('MyList.json', function(data) {
-                allItems = data;
+                // Filter out items where IsActive is false
+                allItems = data.filter(item => item.IsActive === true);
                 filteredItems = allItems;
                 renderPage(currentPage);
             }).fail(function(){
