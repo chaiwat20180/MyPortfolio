@@ -52,5 +52,16 @@
     ],
     "tags": ["Web tools","Hex Range Calculator","Hex","Decimal","Binary"],
     "IsActive": true
+  },
+  {
+    "title": "Tableconvert",
+    "name": "เครื่องมือแปลงไฟล์จาก Excel เป็น SQL Command",
+    "ImagePreview": "images/tableconvert.png",
+    "detail": "เครื่องมือสำหรับแปลงไฟล์จาก Excel เป็น SQL Command พร้อมทั้งสามารถแแก้ไขข้อมูลในตารางได้ สร้างโดย tableConvert",
+    "Links": [
+      { "name": "Web Page", "url": "https://tableconvert.com/" }
+    ],
+    "tags": ["Web tools","TableConvert","Excel","SQL","Command"],
+    "IsActive": true
   }
 ]
