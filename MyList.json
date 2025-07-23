@@ -1,0 +1,63 @@
+[
+  {
+    "title": "MySQLTools",
+    "name": "SQL Tools for where with IN",
+    "ImagePreview": "images/MySQLTools.png",
+    "detail": "เครื่องมือสำหรับจัดการคำสั่ง SQL โดยเฉพาะการสร้างคำสั่ง WHERE IN สำหรับ MySQL",
+    "Links": [
+      { "name": "GitHub Pages", "url": "https://chaiwat20180.github.io/MySQLTools/" }
+    ],
+    "tags": ["Web tools","MySQL"]
+  },
+  {
+    "title": "RandomLotteryNumber",
+    "name": "โปรแกรมสุ่มหมายเลขลอตเตอรี่ หากคิดไม่ออกก็มาใช้ที่นี่",
+    "ImagePreview": "images/RandomLotteryNumber.png",
+    "detail": "เครื่องมือสำหรับสุ่มหมายเลขลอตเตอรี่ โดยไม่ต้องใช้โปรแกรมอื่น",
+    "Links": [
+      { "name": "GitHub Pages", "url": "https://chaiwat20180.github.io/RandomLotteryNumber/" }
+    ],
+    "tags": ["Web tools","Lottery Number", "Random Number"]
+  }, {
+    "title": "Excel Editor",
+    "name": "Excel Editor สำหรับแก้ไขไฟล์ Excel และแปลงไฟล์",
+    "ImagePreview": "images/ExcelEditor.png",
+    "detail": "เครื่องมือสำหรับแก้ไขไฟล์ Excel รองรับ CSV XLS และ XLSX และแปลงไฟล์จาก XLS เป็น XLSX",
+    "Links": [
+      { "name": "GitHub Pages", "url": "https://chaiwat20180.github.io/ExcelEditorByAi/" }
+    ],
+    "tags": ["Web tools","Excel Editor"]
+  },
+  {
+    "title": "RandomLotteryNumber",
+    "name": "โปรแกรมสุ่มหมายเลขลอตเตอรี่ หากคิดไม่ออกก็มาใช้ที่นี่",
+    "ImagePreview": "images/RandomLotteryNumber.png",
+    "detail": "เครื่องมือสำหรับสุ่มหมายเลขลอตเตอรี่ โดยไม่ต้องใช้โปรแกรมอื่น",
+    "Links": [
+      { "name": "GitHub Pages", "url": "https://chaiwat20180.github.io/RandomLotteryNumber/" }
+    ],
+    "tags": ["Web tools","Lottery Number", "Random Number"]
+  }, 
+  {
+    "title": "Data to Json Converter",
+    "name": "เครื่องมือแปลงข้อมูลเป็น JSON อีกทั้งยังรองรับ SQL Formatter",
+    "ImagePreview": "images/DataToJson.png",
+    "detail": "เครื่องมือสำหรับแปลงข้อมูลเป็น JSON และรองรับการจัดรูปแบบ SQL",
+    "Links": [
+      { "name": "GitHub Pages", "url": "https://chaiwat20180.github.io/DataToJson/" }
+    ],
+    "tags": ["Web tools","Data to Json Converter","SQL Formatter","JSON"]
+  },
+  {
+    "title": "HexRangeCalculator",
+    "name": "เครื่องมือคำนวณช่วงเลขฐานสิบหก (Hex)",
+    "ImagePreview": "images/HexRangeCalculator.png",
+    "detail": "เครื่องมือสำหรับคำนวณช่วงเลขฐานสิบหก (Hex) และแปลงเป็นเลขฐานสิบ (Decimal) และเลขฐานสอง (Binary) ได้",
+    "Links": [
+      { "name": "GitHub Pages", "url": "https://chaiwat20180.github.io/HexRangeCalculator/" }
+    ],
+    "tags": ["Web tools","Hex Range Calculator","Hex","Decimal","Binary"]
+  }
+  
+
+]

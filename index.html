@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="th" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- ** ADDED: Tailwind Dark Mode Configuration ** -->
+    <script>
+        // This script enables the class-based dark mode, allowing the theme-toggle button to work.
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ใช้ฟอนต์ Kanit เป็นหลัก */
+        body {
+            font-family: 'Kanit', sans-serif;
+        }
+        /* ซ่อน scrollbar */
+        .modal-content::-webkit-scrollbar {
+            display: none;
+        }
+        .modal-content {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* สไตล์สำหรับปุ่มที่ active */
+        .view-btn.active {
+            background-color: #3B82F6; /* bg-blue-600 */
+            color: white;
+        }
+        .dark .view-btn.active {
+            background-color: #2563EB; /* bg-blue-700 */
+        }
+        
+        /* Animation สำหรับการ์ด */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .item-card-animate {
+            opacity: 0; /* เริ่มต้นด้วยการซ่อน */
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-300">
+
+    <!-- Navbar -->
+    <nav class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-md sticky top-0 z-40 transition-colors duration-300">
+        <div class="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl md:text-2xl font-bold text-blue-600 dark:text-blue-400">My Portfolio</h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="w-full max-w-xs sm:max-w-sm">
+                        <div class="relative">
+                            <input id="searchInput" type="text" placeholder="ค้นหา..." class="w-full bg-gray-100 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-full py-2 pl-4 pr-10 focus:outline-none focus:bg-white dark:focus:bg-gray-800 focus:border-blue-500 dark:focus:border-blue-500 transition-colors duration-300">
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Theme Toggle Button -->
+                    <button id="theme-toggle" type="button" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5">
+                        <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                        <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Controls: View Toggle and Items per page -->
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+            <div class="flex items-center gap-2">
+                <label class="text-sm font-medium text-gray-700 dark:text-gray-300">แสดง:</label>
+                <!-- Grid View Dropdown -->
+                <select id="itemsPerPageSelectGrid" class="items-per-page-select rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm">
+                    <option value="3">3</option>
+                    <option value="6">6</option>
+                    <option value="9" selected>9</option>
+                    <option value="all">ทั้งหมด</option>
+                </select>
+                <!-- List View Dropdown -->
+                <select id="itemsPerPageSelectList" class="items-per-page-select hidden rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm">
+                    <option value="5">5</option>
+                    <option value="10" selected>10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="all">ทั้งหมด</option>
+                </select>
+                 <span class="text-sm font-medium text-gray-700 dark:text-gray-300">รายการ</span>
+            </div>
+            <div class="inline-flex rounded-md shadow-sm" role="group">
+                <button type="button" id="view-grid" class="view-btn active rounded-l-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium px-4 py-2 text-gray-900 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 focus:z-10 focus:ring-2 focus:ring-blue-500">
+                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                </button>
+                <button type="button" id="view-list" class="view-btn rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium px-4 py-2 text-gray-900 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 focus:z-10 focus:ring-2 focus:ring-blue-500">
+                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" /></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Gallery Container -->
+        <div id="gallery">
+            <!-- Items will be injected here by jQuery -->
+        </div>
+
+        <!-- No Results Message -->
+        <div id="noResults" class="hidden text-center py-16">
+            <h2 class="text-2xl font-semibold text-gray-500 dark:text-gray-400">ไม่พบผลลัพธ์ที่ตรงกัน</h2>
+            <p class="text-gray-400 mt-2">ลองใช้คำค้นหาอื่น</p>
+        </div>
+
+        <!-- Pagination -->
+        <div id="pagination" class="flex justify-center items-center space-x-1 sm:space-x-2 mt-12">
+            <!-- Pagination links will be injected here -->
+        </div>
+    </main>
+
+    <!-- Modal for item details -->
+    <div id="itemModal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden opacity-0 transition-opacity duration-300">
+        <div id="modal-content-wrapper" class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col md:flex-row overflow-hidden transform scale-95 transition-transform duration-300">
+            <div id="modalImageContainer" class="group w-full md:w-1/2 h-64 md:h-auto bg-gray-200 dark:bg-gray-700 overflow-hidden">
+                <!-- Image will be injected here -->
+            </div>
+            <div class="w-full md:w-1/2 p-6 flex flex-col modal-content overflow-y-auto">
+                <div class="flex-grow">
+                    <h2 id="modalTitle" class="text-3xl font-bold mb-1 text-gray-900 dark:text-white"></h2>
+                    <p id="modalName" class="text-gray-500 dark:text-gray-400 mb-4"></p>
+                    <div id="modalTags" class="flex flex-wrap gap-2 mb-4"></div>
+                    <p id="modalDetail" class="text-gray-700 dark:text-gray-300 mb-6"></p>
+                </div>
+                <div class="flex-shrink-0">
+                    <h3 class="font-semibold mb-2 text-gray-800 dark:text-gray-200">ลิงก์ที่เกี่ยวข้อง:</h3>
+                    <div id="modalLinks" class="flex flex-wrap gap-3">
+                        <!-- Links will be injected here as buttons -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button id="closeModalBtn" class="absolute top-4 right-4 text-white/80 hover:text-white transition">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+    </div>
+
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            let allItems = [];
+            let filteredItems = [];
+            let currentPage = 1;
+            let currentView = 'grid';
+
+            const fallbackColors = [
+                'bg-blue-500', 'bg-indigo-500', 'bg-purple-500', 'bg-pink-500',
+                'bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500'
+            ];
+
+            // --- THEME TOGGLE LOGIC ---
+            const themeToggleBtn = $('#theme-toggle');
+            const themeToggleDarkIcon = $('#theme-toggle-dark-icon');
+            const themeToggleLightIcon = $('#theme-toggle-light-icon');
+
+            // Set initial theme based on localStorage or system preference
+            if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                $('html').addClass('dark');
+                themeToggleLightIcon.removeClass('hidden');
+            } else {
+                $('html').removeClass('dark');
+                themeToggleDarkIcon.removeClass('hidden');
+            }
+
+            themeToggleBtn.on('click', function() {
+                themeToggleDarkIcon.toggleClass('hidden');
+                themeToggleLightIcon.toggleClass('hidden');
+
+                if (localStorage.getItem('color-theme')) {
+                    if (localStorage.getItem('color-theme') === 'light') {
+                        $('html').addClass('dark');
+                        localStorage.setItem('color-theme', 'dark');
+                    } else {
+                        $('html').removeClass('dark');
+                        localStorage.setItem('color-theme', 'light');
+                    }
+                } else {
+                    if ($('html').hasClass('dark')) {
+                        $('html').removeClass('dark');
+                        localStorage.setItem('color-theme', 'light');
+                    } else {
+                        $('html').addClass('dark');
+                        localStorage.setItem('color-theme', 'dark');
+                    }
+                }
+            });
+
+            // 1. Fetch data
+            $.getJSON('MyList.json', function(data) {
+                allItems = data;
+                filteredItems = allItems;
+                renderPage(currentPage);
+            }).fail(function(){
+                $('#gallery').html('<p class="text-red-500 text-center col-span-full">เกิดข้อผิดพลาด: ไม่สามารถโหลดไฟล์ MyList.json ได้</p>');
+            });
+
+            // 2. Render functions
+            function getItemsPerPage() {
+                let selection = (currentView === 'grid') ? $('#itemsPerPageSelectGrid').val() : $('#itemsPerPageSelectList').val();
+                return selection === 'all' ? filteredItems.length : parseInt(selection, 10);
+            }
+
+            function renderPage(page) {
+                currentPage = page;
+                const itemsPerPage = getItemsPerPage();
+                $('#gallery').empty().removeClass();
+                $('#pagination').empty();
+                $('#noResults').addClass('hidden');
+
+                if (filteredItems.length === 0) {
+                    $('#noResults').removeClass('hidden');
+                    return;
+                }
+
+                const startIndex = (page - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+                const paginatedItems = filteredItems.slice(startIndex, endIndex);
+
+                if (currentView === 'grid') {
+                    renderGridView(paginatedItems, startIndex);
+                } else {
+                    renderListView(paginatedItems, startIndex);
+                }
+                
+                renderPagination();
+            }
+
+            function renderGridView(items, startIndex) {
+                $('#gallery').addClass('grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6');
+                items.forEach((item, index) => {
+                    const colorIndex = (startIndex + index) % fallbackColors.length;
+                    const fallbackBg = fallbackColors[colorIndex];
+                    const itemHtml = `
+                        <div class="item-card group bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-lg border border-gray-200 dark:border-gray-700 transform hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-blue-500/20 transition-all duration-300 cursor-pointer flex flex-col item-card-animate" style="animation-delay: ${index * 50}ms" data-index="${allItems.indexOf(item)}">
+                            <div class="h-48 w-full overflow-hidden flex items-center justify-center">
+                                ${item.ImagePreview ?
+                                    `<img src="${item.ImagePreview}" alt="${item.title}" class="w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-110" onerror="this.parentElement.innerHTML = '<span class=\'text-white font-bold text-2xl\'>${item.title.charAt(0)}</span>'; this.parentElement.classList.add('${fallbackBg}');">` :
+                                    `<div class="w-full h-full flex items-center justify-center ${fallbackBg}"><span class="text-white font-bold text-4xl">${item.title.charAt(0)}</span></div>`
+                                }
+                            </div>
+                            <div class="p-4 flex flex-col flex-grow">
+                                <h3 class="font-semibold text-lg truncate text-gray-900 dark:text-white" title="${item.title}">${item.title}</h3>
+                                <p class="text-gray-500 dark:text-gray-400 text-sm truncate mb-3" title="${item.name}">${item.name}</p>
+                                <div class="flex-grow"></div>
+                                <div class="flex flex-wrap gap-1 mt-auto pt-2">
+                                    ${item.tags.slice(0, 3).map(tag => `<span class="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-xs font-medium px-2 py-0.5 rounded-full">${tag}</span>`).join('')}
+                                    ${item.tags.length > 3 ? `<span class="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300 text-xs font-medium px-2 py-0.5 rounded-full">+${item.tags.length - 3}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>`;
+                    $('#gallery').append(itemHtml);
+                });
+            }
+
+            function renderListView(items, startIndex) {
+                $('#gallery').addClass('flex flex-col space-y-4');
+                 items.forEach((item, index) => {
+                    const colorIndex = (startIndex + index) % fallbackColors.length;
+                    const fallbackBg = fallbackColors[colorIndex];
+                    const itemHtml = `
+                        <div class="item-card group bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl dark:hover:shadow-blue-500/20 transition-all duration-300 cursor-pointer flex item-card-animate" style="animation-delay: ${index * 50}ms" data-index="${allItems.indexOf(item)}">
+                            <div class="flex-shrink-0 h-24 w-24 sm:h-28 sm:w-28 overflow-hidden flex items-center justify-center">
+                                ${item.ImagePreview ?
+                                    `<img src="${item.ImagePreview}" alt="${item.title}" class="w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-110" onerror="this.parentElement.innerHTML = '<span class=\'text-white font-bold text-xl\'>${item.title.charAt(0)}</span>'; this.parentElement.classList.add('${fallbackBg}');">` :
+                                    `<div class="w-full h-full flex items-center justify-center ${fallbackBg}"><span class="text-white font-bold text-3xl">${item.title.charAt(0)}</span></div>`
+                                }
+                            </div>
+                            <div class="p-3 sm:p-4 flex flex-col flex-grow justify-center">
+                                <h3 class="font-semibold text-lg sm:text-xl text-gray-900 dark:text-white">${item.title}</h3>
+                                <p class="text-gray-500 dark:text-gray-400 text-sm sm:text-base mb-2">${item.name}</p>
+                                <div class="flex flex-wrap gap-1.5">
+                                    ${item.tags.map(tag => `<span class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-semibold px-2.5 py-0.5 rounded-full">${tag}</span>`).join('')}
+                                </div>
+                            </div>
+                        </div>`;
+                    $('#gallery').append(itemHtml);
+                });
+            }
+
+            function renderPagination() {
+                const itemsPerPage = getItemsPerPage();
+                if (itemsPerPage >= filteredItems.length) return;
+                const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+                
+                const prevBtn = `<button class="page-btn px-3 py-2 rounded-md transition-colors ${currentPage === 1 ? 'bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed' : 'bg-white dark:bg-gray-700 hover:bg-blue-50 dark:hover:bg-gray-600'}" ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}">&laquo;</button>`;
+                $('#pagination').append(prevBtn);
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const activeClass = i === currentPage ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-700 hover:bg-blue-50 dark:hover:bg-gray-600';
+                    const pageLink = `<button class="page-btn px-4 py-2 rounded-md text-sm transition-colors ${activeClass}" data-page="${i}">${i}</button>`;
+                    $('#pagination').append(pageLink);
+                }
+
+                const nextBtn = `<button class="page-btn px-3 py-2 rounded-md transition-colors ${currentPage === totalPages ? 'bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed' : 'bg-white dark:bg-gray-700 hover:bg-blue-50 dark:hover:bg-gray-600'}" ${currentPage === totalPages ? 'disabled' : ''} data-page="${currentPage + 1}">&raquo;</button>`;
+                $('#pagination').append(nextBtn);
+            }
+
+            // 3. Event Handlers
+            $('#searchInput').on('keyup', function() {
+                const searchTerm = $(this).val().toLowerCase().trim();
+                filteredItems = allItems.filter(item => 
+                    item.title.toLowerCase().includes(searchTerm) ||
+                    item.name.toLowerCase().includes(searchTerm) ||
+                    item.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+                );
+                renderPage(1);
+            });
+            
+            $('.view-btn').on('click', function() {
+                currentView = $(this).attr('id').replace('view-', '');
+                $('.view-btn').removeClass('active');
+                $(this).addClass('active');
+                if (currentView === 'grid') {
+                    $('#itemsPerPageSelectGrid').removeClass('hidden');
+                    $('#itemsPerPageSelectList').addClass('hidden');
+                } else {
+                    $('#itemsPerPageSelectGrid').addClass('hidden');
+                    $('#itemsPerPageSelectList').removeClass('hidden');
+                }
+                renderPage(1);
+            });
+
+            $('.items-per-page-select').on('change', function() {
+                renderPage(1);
+            });
+
+            $('#pagination').on('click', '.page-btn', function() {
+                const page = $(this).data('page');
+                renderPage(page);
+                $('html, body').animate({ scrollTop: 0 }, 300);
+            });
+
+            // Modal handling
+            $('#gallery').on('click', '.item-card', function() {
+                const item = allItems[$(this).data('index')];
+                $('#modalTitle').text(item.title);
+                $('#modalName').text(item.name);
+                $('#modalDetail').text(item.detail);
+
+                $('#modalImageContainer').empty();
+                if (item.ImagePreview) {
+                    const modalImg = `<img src="${item.ImagePreview}" alt="${item.title}" class="w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-110">`;
+                    $('#modalImageContainer').html(modalImg);
+                } else {
+                    const colorIndex = allItems.indexOf(item) % fallbackColors.length;
+                    const fallbackBg = fallbackColors[colorIndex];
+                    $('#modalImageContainer').html(`<div class="w-full h-full flex items-center justify-center ${fallbackBg}"><span class="text-white font-bold text-6xl">${item.title.charAt(0)}</span></div>`);
+                }
+
+                $('#modalTags').empty();
+                item.tags.forEach(tag => {
+                    $('#modalTags').append(`<span class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-semibold px-2.5 py-0.5 rounded-full">${tag}</span>`);
+                });
+
+                $('#modalLinks').empty();
+                if (item.Links && item.Links.length > 0) {
+                    item.Links.forEach(link => {
+                        const linkEl = `
+                            <a href="${link.url}" target="_blank" rel="noopener noreferrer" 
+                               class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 dark:bg-blue-500 rounded-lg shadow-sm hover:bg-blue-700 dark:hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800 transition-all duration-200">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                <span>${link.name}</span>
+                            </a>`;
+                        $('#modalLinks').append(linkEl);
+                    });
+                } else {
+                     $('#modalLinks').html('<p class="text-sm text-gray-500 dark:text-gray-400">ไม่มีลิงก์</p>');
+                }
+
+                $('#itemModal').removeClass('hidden');
+                setTimeout(() => {
+                    $('#itemModal').removeClass('opacity-0');
+                    $('#modal-content-wrapper').removeClass('scale-95');
+                }, 10);
+            });
+
+            function closeModal() {
+                $('#itemModal').addClass('opacity-0');
+                $('#modal-content-wrapper').addClass('scale-95');
+                setTimeout(() => {
+                    $('#itemModal').addClass('hidden');
+                }, 300); // Match duration of transition
+            }
+
+            $('#closeModalBtn').on('click', closeModal);
+            $('#itemModal').on('click', function(e) {
+                if ($(e.target).is('#itemModal')) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
