@@ -54,6 +54,12 @@
             opacity: 0; /* เริ่มต้นด้วยการซ่อน */
             animation: fadeInUp 0.5s ease-out forwards;
         }
+        .copyright {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 0.9rem;
+            color: #888;
+        }
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-300">
@@ -63,13 +69,21 @@
         <div class="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <div class="flex-shrink-0">
-                    <h1 class="text-xl md:text-2xl font-bold text-blue-600 dark:text-blue-400">My Portfolio</h1>
+                    <a href="index.html"><h1 class="text-xl md:text-2xl font-bold text-blue-600 dark:text-blue-400">My Portfolio</h1></a>
                 </div>
-                <div class="flex items-center gap-4">
-                    <div class="w-full max-w-xs sm:max-w-sm">
+                <div class="flex items-center gap-2 sm:gap-4">
+                    <!-- Support Button -->
+                    <button id="donate-btn" type="button" class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-pink-500" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="hidden sm:inline">สนับสนุน</span>
+                    </button>
+                    <!-- Search Input -->
+                    <div class="w-full max-w-[150px] sm:max-w-sm">
                         <div class="relative">
                             <input id="searchInput" type="text" placeholder="ค้นหา..." class="w-full bg-gray-100 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-full py-2 pl-4 pr-10 focus:outline-none focus:bg-white dark:focus:bg-gray-800 focus:border-blue-500 dark:focus:border-blue-500 transition-colors duration-300">
-                            <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                                 <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
                                 </svg>
@@ -77,9 +91,9 @@
                         </div>
                     </div>
                     <!-- Theme Toggle Button -->
-                    <button id="theme-toggle" type="button" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5">
-                        <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
-                        <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                    <button id="theme-toggle" type="button" class="text-gray-500 dark:text-gray-400 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5">
+                        <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-gray-800" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                        <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
                     </button>
                 </div>
             </div>
@@ -135,9 +149,12 @@
         <div id="pagination" class="flex justify-center items-center space-x-1 sm:space-x-2 mt-12">
             <!-- Pagination links will be injected here -->
         </div>
+        <div class="copyright">
+                &copy; <span id="currentYear"></span> <a href="https://github.com/chaiwat20180" class="text-decoration-none text-blue-600">Chaiwat Kwanta</a> All rights reserved.
+        </div>
     </main>
 
-    <!-- Modal for item details -->
+    <!-- Item Details Modal -->
     <div id="itemModal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden opacity-0 transition-opacity duration-300">
         <div id="modal-content-wrapper" class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col md:flex-row overflow-hidden transform scale-95 transition-transform duration-300">
             <div id="modalImageContainer" class="group w-full md:w-1/2 h-64 md:h-auto bg-gray-200 dark:bg-gray-700 overflow-hidden">
@@ -163,6 +180,21 @@
         </button>
     </div>
 
+    <!-- Donate Modal -->
+    <div id="donateModal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden opacity-0 transition-opacity duration-300">
+        <div id="donate-modal-content" class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-md p-6 text-center transform scale-95 transition-transform duration-300 relative">
+            <!-- Close button -->
+            <button id="closeDonateModalBtn" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h2 class="text-2xl font-bold mb-2 text-gray-900 dark:text-white">สนับสนุนผลงาน</h2>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">สแกน QR Code เพื่อสนับสนุนในการสร้างเครื่องมือใหม่ๆ ขอบคุณครับ!</p>
+            <div class="bg-white p-4 rounded-lg">
+                <img src="images/PromPay.jpg" alt="QR Code for Donation" class="w-full h-auto rounded-md mx-auto">
+            </div>
+        </div>
+    </div>
+
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -182,6 +214,8 @@
             const themeToggleBtn = $('#theme-toggle');
             const themeToggleDarkIcon = $('#theme-toggle-dark-icon');
             const themeToggleLightIcon = $('#theme-toggle-light-icon');
+
+            $('#currentYear').text(`2024 - ${new Date().getFullYear()}`);
 
             // Set initial theme based on localStorage or system preference
             if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -361,7 +395,7 @@
                 $('html, body').animate({ scrollTop: 0 }, 300);
             });
 
-            // Modal handling
+            // Item Modal handling
             $('#gallery').on('click', '.item-card', function() {
                 const item = allItems[$(this).data('index')];
                 $('#modalTitle').text(item.title);
@@ -405,18 +439,42 @@
                 }, 10);
             });
 
-            function closeModal() {
+            function closeItemModal() {
                 $('#itemModal').addClass('opacity-0');
                 $('#modal-content-wrapper').addClass('scale-95');
                 setTimeout(() => {
                     $('#itemModal').addClass('hidden');
-                }, 300); // Match duration of transition
+                }, 300);
             }
 
-            $('#closeModalBtn').on('click', closeModal);
+            $('#closeModalBtn').on('click', closeItemModal);
             $('#itemModal').on('click', function(e) {
                 if ($(e.target).is('#itemModal')) {
-                    closeModal();
+                    closeItemModal();
+                }
+            });
+
+            // Donate Modal Logic
+            $('#donate-btn').on('click', function() {
+                $('#donateModal').removeClass('hidden');
+                setTimeout(() => {
+                    $('#donateModal').removeClass('opacity-0');
+                    $('#donate-modal-content').removeClass('scale-95');
+                }, 10);
+            });
+
+            function closeDonateModal() {
+                $('#donateModal').addClass('opacity-0');
+                $('#donate-modal-content').addClass('scale-95');
+                setTimeout(() => {
+                    $('#donateModal').addClass('hidden');
+                }, 300);
+            }
+
+            $('#closeDonateModalBtn').on('click', closeDonateModal);
+            $('#donateModal').on('click', function(e) {
+                if ($(e.target).is('#donateModal')) {
+                    closeDonateModal();
                 }
             });
         });
