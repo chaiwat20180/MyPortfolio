@@ -135,45 +135,51 @@
 
     <main class="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8">
         <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-            <div class="flex items-center gap-2">
-                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">ประเภท:</label>
-                <!-- Multi-select Searchable Dropdown -->
-                <div class="relative w-64" id="multi-select-tag-container">
-                    <div id="tagSelectDisplay" class="flex items-center flex-wrap gap-1 w-full min-h-[42px] rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus-within:border-indigo-300 focus-within:ring focus-within:ring-indigo-200 focus-within:ring-opacity-50 text-sm cursor-pointer p-2">
-                        <span id="tagPlaceholder" class="text-gray-500 dark:text-gray-400">ทั้งหมด</span>
-                    </div>
-                    <div id="tagDropdown" class="absolute hidden mt-1 w-full rounded-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-lg z-50">
-                        <div class="p-2 border-b border-gray-200 dark:border-gray-600">
-                             <input type="text" id="tagSearchInput" placeholder="ค้นหาแท็ก..." class="bg-gray-50 dark:bg-gray-700 outline-none w-full py-2 px-3 rounded-md text-gray-800 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400 border border-gray-300 dark:border-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <!-- MODIFIED: Responsive Filter Container -->
+            <div class="flex flex-col md:flex-row w-full items-stretch md:items-center gap-4">
+                <!-- ประเภท Filter -->
+                <div class="flex items-center gap-2 w-full">
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">ประเภท:</label>
+                    <div class="relative w-full" id="multi-select-tag-container">
+                        <div id="tagSelectDisplay" class="flex items-center flex-wrap gap-1 w-full min-h-[42px] rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus-within:border-indigo-300 focus-within:ring focus-within:ring-indigo-200 focus-within:ring-opacity-50 text-sm cursor-pointer p-2">
+                            <span id="tagPlaceholder" class="text-gray-500 dark:text-gray-400">ทั้งหมด</span>
                         </div>
-                        <div id="tagOptionsContainer" class="max-h-48 overflow-y-auto p-1">
-                            <!-- Checkbox options will be populated by JS -->
+                        <div id="tagDropdown" class="absolute hidden mt-1 w-full rounded-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-lg z-50">
+                            <div class="p-2 border-b border-gray-200 dark:border-gray-600">
+                                 <input type="text" id="tagSearchInput" placeholder="ค้นหาแท็ก..." class="bg-gray-50 dark:bg-gray-700 outline-none w-full py-2 px-3 rounded-md text-gray-800 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400 border border-gray-300 dark:border-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div id="tagOptionsContainer" class="max-h-48 overflow-y-auto p-1">
+                                <!-- Checkbox options will be populated by JS -->
+                            </div>
                         </div>
                     </div>
                 </div>
-                
-                <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-2">จำนวน:</label>
-                <!-- NEW: Custom Dropdown for Grid View -->
-                <div id="itemsPerPageDropdownGrid" class="relative w-28">
-                    <div id="itemsPerPageDisplayGrid" class="flex items-center justify-between w-full min-h-[42px] rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus-within:border-indigo-300 focus-within:ring focus-within:ring-indigo-200 focus-within:ring-opacity-50 text-sm cursor-pointer px-3 py-2">
-                        <span class="selected-value">9</span>
-                        <svg class="fill-current h-4 w-4 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+            
+                <!-- จำนวน Filter -->
+                <div class="flex items-center gap-2 w-full md:w-auto">
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">จำนวน:</label>
+                    <!-- Custom Dropdown for Grid View -->
+                    <div id="itemsPerPageDropdownGrid" class="relative flex-grow md:w-28">
+                        <div id="itemsPerPageDisplayGrid" class="flex items-center justify-between w-full min-h-[42px] rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus-within:border-indigo-300 focus-within:ring focus-within:ring-indigo-200 focus-within:ring-opacity-50 text-sm cursor-pointer px-3 py-2">
+                            <span class="selected-value">9</span>
+                            <svg class="fill-current h-4 w-4 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                        </div>
+                        <div id="itemsPerPageOptionsGrid" class="absolute hidden mt-1 w-full rounded-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-lg z-50 p-1">
+                            <!-- Options populated by JS -->
+                        </div>
                     </div>
-                    <div id="itemsPerPageOptionsGrid" class="absolute hidden mt-1 w-full rounded-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-lg z-50 p-1">
-                        <!-- Options populated by JS -->
+                    <!-- Custom Dropdown for List View -->
+                    <div id="itemsPerPageDropdownList" class="relative flex-grow md:w-28 hidden">
+                         <div id="itemsPerPageDisplayList" class="flex items-center justify-between w-full min-h-[42px] rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus-within:border-indigo-300 focus-within:ring focus-within:ring-indigo-200 focus-within:ring-opacity-50 text-sm cursor-pointer px-3 py-2">
+                            <span class="selected-value">10</span>
+                            <svg class="fill-current h-4 w-4 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                        </div>
+                        <div id="itemsPerPageOptionsList" class="absolute hidden mt-1 w-full rounded-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-lg z-50 p-1">
+                            <!-- Options populated by JS -->
+                        </div>
                     </div>
+                     <span class="text-sm font-medium text-gray-700 dark:text-gray-300">รายการ</span>
                 </div>
-                <!-- NEW: Custom Dropdown for List View -->
-                <div id="itemsPerPageDropdownList" class="relative w-28 hidden">
-                     <div id="itemsPerPageDisplayList" class="flex items-center justify-between w-full min-h-[42px] rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus-within:border-indigo-300 focus-within:ring focus-within:ring-indigo-200 focus-within:ring-opacity-50 text-sm cursor-pointer px-3 py-2">
-                        <span class="selected-value">10</span>
-                        <svg class="fill-current h-4 w-4 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-                    </div>
-                    <div id="itemsPerPageOptionsList" class="absolute hidden mt-1 w-full rounded-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-lg z-50 p-1">
-                        <!-- Options populated by JS -->
-                    </div>
-                </div>
-                 <span class="text-sm font-medium text-gray-700 dark:text-gray-300">รายการ</span>
             </div>
             <div class="inline-flex rounded-md shadow-sm" role="group">
                 <button type="button" id="view-grid" class="view-btn active rounded-l-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium px-4 py-2 text-gray-900 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 focus:z-10 focus:ring-2 focus:ring-blue-500">
