@@ -7,7 +7,7 @@
     "Links": [
       { "name": "GitHub Pages", "url": "https://chaiwat20180.github.io/MySQLTools/" }
     ],
-    "tags": ["My tools","Web tools","MySQL"],
+    "tags": ["Web Tool", "Database", "SQL", "MySQL"],
     "IsActive": true
   },
   {
@@ -18,9 +18,10 @@
     "Links": [
       { "name": "GitHub Pages", "url": "https://chaiwat20180.github.io/RandomLotteryNumber/" }
     ],
-    "tags": ["My tools","Web tools","Lottery Number", "Random Number"],
+    "tags": ["Web Tool", "Generator", "Random Number", "Lottery"],
     "IsActive": false
-  }, {
+  },
+  {
     "title": "Excel Editor",
     "name": "Excel Editor สำหรับแก้ไขไฟล์ Excel และแปลงไฟล์",
     "ImagePreview": "images/ExcelEditor.png",
@@ -28,7 +29,7 @@
     "Links": [
       { "name": "GitHub Pages", "url": "https://chaiwat20180.github.io/ExcelEditorByAi/" }
     ],
-    "tags": ["My tools","Web tools","Excel","Excel Editor"],
+    "tags": ["Web Tool", "Editor", "Converter", "Excel"],
     "IsActive": true
   },
   {
@@ -39,7 +40,7 @@
     "Links": [
       { "name": "GitHub Pages", "url": "https://chaiwat20180.github.io/DataToJson/" }
     ],
-    "tags": ["My tools","Web tools","Data to Json Converter","SQL Formatter","JSON"],
+    "tags": ["Web Tool", "Converter", "Formatter", "JSON", "SQL"],
     "IsActive": true
   },
   {
@@ -50,7 +51,7 @@
     "Links": [
       { "name": "GitHub Pages", "url": "https://chaiwat20180.github.io/HexRangeCalculator/" }
     ],
-    "tags": ["My tools","Web tools","Hex Range Calculator","Hex","Decimal","Binary"],
+    "tags": ["Web Tool", "Calculator", "Converter", "Hex", "Decimal", "Binary"],
     "IsActive": true
   },
   {
@@ -61,7 +62,7 @@
     "Links": [
       { "name": "Web Page", "url": "https://tableconvert.com/" }
     ],
-    "tags": ["Web tools","TableConvert","Excel","SQL","Command"],
+    "tags": ["Online Tool", "Converter", "Excel", "SQL"],
     "IsActive": true
   },
   {
@@ -72,8 +73,7 @@
     "Links": [
       { "name": "Web Page", "url": "https://books.goalkicker.com/" }
     ],
-    "tags": ["Web tools","Programming","Books","Notes","Free PDF","PDF"],
+    "tags": ["Resource", "Programming", "E-book", "PDF"],
     "IsActive": true
   }
-  
 ]
