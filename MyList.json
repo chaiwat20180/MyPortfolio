@@ -7,7 +7,7 @@
     "Links": [
       { "name": "GitHub Pages", "url": "https://chaiwat20180.github.io/MySQLTools/" }
     ],
-    "tags": ["Web tools","MySQL"],
+    "tags": ["My tools","Web tools","MySQL"],
     "IsActive": true
   },
   {
@@ -18,7 +18,7 @@
     "Links": [
       { "name": "GitHub Pages", "url": "https://chaiwat20180.github.io/RandomLotteryNumber/" }
     ],
-    "tags": ["Web tools","Lottery Number", "Random Number"],
+    "tags": ["My tools","Web tools","Lottery Number", "Random Number"],
     "IsActive": false
   }, {
     "title": "Excel Editor",
@@ -28,7 +28,7 @@
     "Links": [
       { "name": "GitHub Pages", "url": "https://chaiwat20180.github.io/ExcelEditorByAi/" }
     ],
-    "tags": ["Web tools","Excel Editor"],
+    "tags": ["My tools","Web tools","Excel","Excel Editor"],
     "IsActive": true
   },
   {
@@ -39,7 +39,7 @@
     "Links": [
       { "name": "GitHub Pages", "url": "https://chaiwat20180.github.io/DataToJson/" }
     ],
-    "tags": ["Web tools","Data to Json Converter","SQL Formatter","JSON"],
+    "tags": ["My tools","Web tools","Data to Json Converter","SQL Formatter","JSON"],
     "IsActive": true
   },
   {
@@ -50,7 +50,7 @@
     "Links": [
       { "name": "GitHub Pages", "url": "https://chaiwat20180.github.io/HexRangeCalculator/" }
     ],
-    "tags": ["Web tools","Hex Range Calculator","Hex","Decimal","Binary"],
+    "tags": ["My tools","Web tools","Hex Range Calculator","Hex","Decimal","Binary"],
     "IsActive": true
   },
   {
@@ -63,5 +63,17 @@
     ],
     "tags": ["Web tools","TableConvert","Excel","SQL","Command"],
     "IsActive": true
+  },
+  {
+    "title": "Programming Notes for Professionals books",
+    "name": "หนังสือ Programming ฟรี ",
+    "ImagePreview": "images/programming_notes.png",
+    "detail": "แหล่งหนังสือ PDF ที่รวบรวมไฟล์เกี่ยวกับการเขียนโปรแกรมสำหรับมืออาชีพฟรี!",
+    "Links": [
+      { "name": "Web Page", "url": "https://books.goalkicker.com/" }
+    ],
+    "tags": ["Web tools","Programming","Books","Notes","Free PDF","PDF"],
+    "IsActive": true
   }
+  
 ]
