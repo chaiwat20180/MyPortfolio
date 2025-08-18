@@ -19,7 +19,7 @@
         body {
             font-family: 'Sarabun', sans-serif;
         }
-        /* ซ่อน scrollbar */
+        /* ซ่อน scrollbar เริ่มต้น (จะใช้ custom แทน) */
         .modal-content::-webkit-scrollbar {
             display: none;
         }
@@ -57,13 +57,46 @@
             font-size: 0.9rem;
             color: #888;
         }
-        /* ** NEW: Style for centered text in select on some browsers ** */
-        /* select.custom-select {
-            text-align-last: center;
-            text-align: center;
-            -ms-text-align-last: center;
-            -moz-text-align-last: center;
-        } */
+
+        /* --- NEW: Custom Scrollbar Styles --- */
+        /* Works on Firefox */
+        * {
+          scrollbar-width: thin;
+          scrollbar-color: #A0AEC0 #E2E8F0; /* thumb track */
+        }
+        .dark * {
+          scrollbar-color: #4A5568 #2D3748; /* thumb track */
+        }
+
+        /* Works on Chrome, Edge, and Safari */
+        ::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+          background: #E2E8F0; /* light mode track */
+          border-radius: 10px;
+        }
+        .dark ::-webkit-scrollbar-track {
+          background: #2D3748; /* dark mode track */
+        }
+        ::-webkit-scrollbar-thumb {
+          background-color: #A0AEC0; /* light mode thumb */
+          border-radius: 10px;
+          border: 2px solid #E2E8F0; /* light mode track */
+        }
+        .dark ::-webkit-scrollbar-thumb {
+          background-color: #4A5568; /* dark mode thumb */
+          border: 2px solid #2D3748; /* dark mode track */
+        }
+        ::-webkit-scrollbar-thumb:hover {
+          background-color: #718096; /* light mode thumb hover */
+        }
+        .dark ::-webkit-scrollbar-thumb:hover {
+          background-color: #718096; /* dark mode thumb hover */
+        }
+        /* --- END: Custom Scrollbar Styles --- */
+
     </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-300">
@@ -103,25 +136,43 @@
     <main class="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8">
         <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
             <div class="flex items-center gap-2">
-                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">แสดง:</label>
-                <select id="tagFilterSelect" class="custom-select rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm py-2 px-4">
-                    <option value="all">ทั้งหมด</option>
-                </select>
-
-                <select id="itemsPerPageSelectGrid" class="items-per-page-select rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm py-2 px-4 custom-select">
-                    <option value="all">ทั้งหมด</option>
-                    <option value="3">3</option>
-                    <option value="6">6</option>
-                    <option value="9" selected>9</option>
-                </select>
-                <select id="itemsPerPageSelectList" class="items-per-page-select hidden rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm py-2 px-4 custom-select">
-                    <option value="all">ทั้งหมด</option>
-                    <option value="5">5</option>
-                    <option value="10" selected>10</option>
-                    <option value="20">20</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                </select>
+                 <label class="text-sm font-medium text-gray-700 dark:text-gray-300">ประเภท:</label>
+                <!-- Multi-select Searchable Dropdown -->
+                <div class="relative w-64" id="multi-select-tag-container">
+                    <div id="tagSelectDisplay" class="flex items-center flex-wrap gap-1 w-full min-h-[42px] rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus-within:border-indigo-300 focus-within:ring focus-within:ring-indigo-200 focus-within:ring-opacity-50 text-sm cursor-pointer p-2">
+                        <span id="tagPlaceholder" class="text-gray-500 dark:text-gray-400">ทั้งหมด</span>
+                    </div>
+                    <div id="tagDropdown" class="absolute hidden mt-1 w-full rounded-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-lg z-50">
+                        <div class="p-2 border-b border-gray-200 dark:border-gray-600">
+                             <input type="text" id="tagSearchInput" placeholder="ค้นหาแท็ก..." class="bg-gray-50 dark:bg-gray-700 outline-none w-full py-2 px-3 rounded-md text-gray-800 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400 border border-gray-300 dark:border-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div id="tagOptionsContainer" class="max-h-48 overflow-y-auto p-1">
+                            <!-- Checkbox options will be populated by JS -->
+                        </div>
+                    </div>
+                </div>
+                
+                <label class="text-sm font-medium text-gray-700 dark:text-gray-300 ml-2">จำนวน:</label>
+                <!-- NEW: Custom Dropdown for Grid View -->
+                <div id="itemsPerPageDropdownGrid" class="relative w-28">
+                    <div id="itemsPerPageDisplayGrid" class="flex items-center justify-between w-full min-h-[42px] rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus-within:border-indigo-300 focus-within:ring focus-within:ring-indigo-200 focus-within:ring-opacity-50 text-sm cursor-pointer px-3 py-2">
+                        <span class="selected-value">9</span>
+                        <svg class="fill-current h-4 w-4 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                    </div>
+                    <div id="itemsPerPageOptionsGrid" class="absolute hidden mt-1 w-full rounded-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-lg z-50 p-1">
+                        <!-- Options populated by JS -->
+                    </div>
+                </div>
+                <!-- NEW: Custom Dropdown for List View -->
+                <div id="itemsPerPageDropdownList" class="relative w-28 hidden">
+                     <div id="itemsPerPageDisplayList" class="flex items-center justify-between w-full min-h-[42px] rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus-within:border-indigo-300 focus-within:ring focus-within:ring-indigo-200 focus-within:ring-opacity-50 text-sm cursor-pointer px-3 py-2">
+                        <span class="selected-value">10</span>
+                        <svg class="fill-current h-4 w-4 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                    </div>
+                    <div id="itemsPerPageOptionsList" class="absolute hidden mt-1 w-full rounded-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-lg z-50 p-1">
+                        <!-- Options populated by JS -->
+                    </div>
+                </div>
                  <span class="text-sm font-medium text-gray-700 dark:text-gray-300">รายการ</span>
             </div>
             <div class="inline-flex rounded-md shadow-sm" role="group">
@@ -193,6 +244,7 @@
             let filteredItems = [];
             let currentPage = 1;
             let currentView = 'grid';
+            let selectedTags = [];
 
             const fallbackColors = [
                 'bg-blue-500', 'bg-indigo-500', 'bg-purple-500', 'bg-pink-500',
@@ -206,7 +258,6 @@
 
             $('#currentYear').text(`2024 - ${new Date().getFullYear()}`);
 
-            // Set initial theme based on localStorage or system preference
             if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 $('html').addClass('dark');
                 themeToggleLightIcon.removeClass('hidden');
@@ -218,27 +269,15 @@
             themeToggleBtn.on('click', function() {
                 themeToggleDarkIcon.toggleClass('hidden');
                 themeToggleLightIcon.toggleClass('hidden');
-
-                if (localStorage.getItem('color-theme')) {
-                    if (localStorage.getItem('color-theme') === 'light') {
-                        $('html').addClass('dark');
-                        localStorage.setItem('color-theme', 'dark');
-                    } else {
-                        $('html').removeClass('dark');
-                        localStorage.setItem('color-theme', 'light');
-                    }
+                $('html').toggleClass('dark');
+                if ($('html').hasClass('dark')) {
+                    localStorage.setItem('color-theme', 'dark');
                 } else {
-                    if ($('html').hasClass('dark')) {
-                        $('html').removeClass('dark');
-                        localStorage.setItem('color-theme', 'light');
-                    } else {
-                        $('html').addClass('dark');
-                        localStorage.setItem('color-theme', 'dark');
-                    }
+                    localStorage.setItem('color-theme', 'light');
                 }
             });
 
-            // ** NEW: Function to populate tags dropdown **
+            // --- Function to populate multi-select tags dropdown ---
             function populateTags(items) {
                 const tags = new Set();
                 items.forEach(item => {
@@ -246,9 +285,18 @@
                 });
 
                 const sortedTags = Array.from(tags).sort();
-                const $tagFilterSelect = $('#tagFilterSelect');
+                const $tagOptionsContainer = $('#tagOptionsContainer');
+                $tagOptionsContainer.empty(); 
+
                 sortedTags.forEach(tag => {
-                    $tagFilterSelect.append(`<option value="${tag}">${tag}</option>`);
+                    const optionId = `tag-option-${tag.replace(/\s+/g, '-')}`;
+                    const optionHtml = `
+                        <div class="flex items-center p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <input type="checkbox" id="${optionId}" value="${tag}" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="${optionId}" class="ml-3 min-w-0 flex-1 text-sm text-gray-800 dark:text-gray-200 cursor-pointer">${tag}</label>
+                        </div>
+                    `;
+                    $tagOptionsContainer.append(optionHtml);
                 });
             }
 
@@ -256,16 +304,15 @@
             $.getJSON('MyList.json', function(data) {
                 allItems = data.filter(item => item.IsActive === true);
                 filteredItems = allItems;
-                populateTags(allItems); // ** NEW: Call populate tags function
+                populateTags(allItems); 
                 renderPage(currentPage);
             }).fail(function(){
                 $('#gallery').html('<p class="text-red-500 text-center col-span-full">เกิดข้อผิดพลาด: ไม่สามารถโหลดไฟล์ MyList.json ได้</p>');
             });
 
-            // ** NEW: Centralized filter function **
+            // --- Centralized filter function ---
             function applyFilters() {
                 const searchTerm = $('#searchInput').val().toLowerCase().trim();
-                const selectedTag = $('#tagFilterSelect').val();
 
                 filteredItems = allItems.filter(item => {
                     const matchesSearch = (
@@ -274,8 +321,8 @@
                         item.tags.some(tag => tag.toLowerCase().includes(searchTerm))
                     );
                     const matchesTag = (
-                        selectedTag === 'all' ||
-                        item.tags.includes(selectedTag)
+                        selectedTags.length === 0 ||
+                        item.tags.some(tag => selectedTags.includes(tag))
                     );
                     return matchesSearch && matchesTag;
                 });
@@ -284,7 +331,9 @@
 
             // 2. Render functions
             function getItemsPerPage() {
-                let selection = (currentView === 'grid') ? $('#itemsPerPageSelectGrid').val() : $('#itemsPerPageSelectList').val();
+                let selection = (currentView === 'grid') 
+                    ? $('#itemsPerPageDropdownGrid').data('value') 
+                    : $('#itemsPerPageDropdownList').data('value');
                 return selection === 'all' ? filteredItems.length : parseInt(selection, 10);
             }
 
@@ -320,7 +369,7 @@
                     const fallbackBg = fallbackColors[colorIndex];
                     const itemHtml = `
                         <div class="item-card group bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-lg border border-gray-200 dark:border-gray-700 transform hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-blue-500/20 transition-all duration-300 cursor-pointer flex flex-col item-card-animate" style="animation-delay: ${index * 50}ms" data-index="${allItems.indexOf(item)}">
-                            <div class="h-48 w-full overflow-hidden flex items-center justify-center">
+                            <div class="h-48 w-full overflow-hidden flex items-center justify-center rounded-t-lg">
                                 ${item.ImagePreview ?
                                     `<img src="${item.ImagePreview}" alt="${item.title}" class="w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-110" onerror="this.parentElement.innerHTML = '<span class=\'text-white font-bold text-2xl\'>${item.title.charAt(0)}</span>'; this.parentElement.classList.add('${fallbackBg}');">` :
                                     `<div class="w-full h-full flex items-center justify-center ${fallbackBg}"><span class="text-white font-bold text-4xl">${item.title.charAt(0)}</span></div>`
@@ -347,7 +396,7 @@
                     const fallbackBg = fallbackColors[colorIndex];
                     const itemHtml = `
                         <div class="item-card group bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl dark:hover:shadow-blue-500/20 transition-all duration-300 cursor-pointer flex item-card-animate" style="animation-delay: ${index * 50}ms" data-index="${allItems.indexOf(item)}">
-                            <div class="flex-shrink-0 h-24 w-24 sm:h-28 sm:w-28 overflow-hidden flex items-center justify-center">
+                            <div class="flex-shrink-0 h-24 w-24 sm:h-28 sm:w-28 overflow-hidden flex items-center justify-center rounded-l-lg">
                                 ${item.ImagePreview ?
                                     `<img src="${item.ImagePreview}" alt="${item.title}" class="w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-110" onerror="this.parentElement.innerHTML = '<span class=\'text-white font-bold text-xl\'>${item.title.charAt(0)}</span>'; this.parentElement.classList.add('${fallbackBg}');">` :
                                     `<div class="w-full h-full flex items-center justify-center ${fallbackBg}"><span class="text-white font-bold text-3xl">${item.title.charAt(0)}</span></div>`
@@ -384,24 +433,115 @@
             }
 
             // 3. Event Handlers
-            $('#searchInput').on('keyup', applyFilters); // ** MODIFIED **
-            $('#tagFilterSelect').on('change', applyFilters); // ** NEW **
+            $('#searchInput').on('keyup', applyFilters);
             
+            // --- Multi-select Dropdown Logic ---
+            const $tagContainer = $('#multi-select-tag-container');
+            const $tagDisplay = $('#tagSelectDisplay');
+            const $tagDropdown = $('#tagDropdown');
+            const $tagSearchInput = $('#tagSearchInput');
+            const $tagOptionsContainer = $('#tagOptionsContainer');
+            const $tagPlaceholder = $('#tagPlaceholder');
+
+            function updateTagDisplay() {
+                $tagDisplay.find('.tag-badge').remove();
+                if (selectedTags.length === 0) {
+                    $tagPlaceholder.removeClass('hidden');
+                } else {
+                    $tagPlaceholder.addClass('hidden');
+                    selectedTags.forEach(tag => {
+                        $tagDisplay.append(`<span class="tag-badge inline-flex items-center gap-1.5 bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-xs font-medium px-2 py-1 rounded-full"><span>${tag}</span></span>`);
+                    });
+                }
+            }
+
+            $tagDisplay.on('click', () => $tagDropdown.toggleClass('hidden'));
+            $tagOptionsContainer.on('change', 'input[type="checkbox"]', function() {
+                const value = $(this).val();
+                if (this.checked) {
+                    if (!selectedTags.includes(value)) selectedTags.push(value);
+                } else {
+                    selectedTags = selectedTags.filter(tag => tag !== value);
+                }
+                updateTagDisplay();
+                applyFilters();
+            });
+            $tagSearchInput.on('keyup', function() {
+                const filter = $(this).val().toLowerCase();
+                $tagOptionsContainer.find('.flex').each(function() {
+                    $(this).toggle($(this).find('label').text().toLowerCase().includes(filter));
+                });
+            });
+
+            // --- NEW: Generic Custom Select Logic ---
+            function setupCustomSelect(containerId, options) {
+                const $container = $(`#${containerId}`);
+                const $display = $container.find('div:first');
+                const $displayValue = $display.find('.selected-value');
+                const $optionsPanel = $container.find('div:last');
+
+                // Populate options
+                options.forEach(option => {
+                    $optionsPanel.append(`<div class="px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md" data-value="${option.value}">${option.text}</div>`);
+                });
+
+                // Set initial state
+                const defaultValue = options.find(o => o.selected)?.value || options[0].value;
+                const defaultText = options.find(o => o.value == defaultValue).text;
+                $container.data('value', defaultValue);
+                $displayValue.text(defaultText);
+
+                // Toggle dropdown
+                $display.on('click', () => $optionsPanel.toggleClass('hidden'));
+                
+                // Handle option selection
+                $optionsPanel.on('click', 'div', function() {
+                    const value = $(this).data('value');
+                    const text = $(this).text();
+                    $container.data('value', value);
+                    $displayValue.text(text);
+                    $optionsPanel.addClass('hidden');
+                    renderPage(1);
+                });
+            }
+
+            // Setup for Items Per Page dropdowns
+            setupCustomSelect('itemsPerPageDropdownGrid', [
+                { value: 'all', text: 'ทั้งหมด' }, { value: '3', text: '3' },
+                { value: '6', text: '6' }, { value: '9', text: '9', selected: true }
+            ]);
+            setupCustomSelect('itemsPerPageDropdownList', [
+                { value: 'all', text: 'ทั้งหมด' }, { value: '5', text: '5' },
+                { value: '10', text: '10', selected: true }, { value: '20', text: '20' },
+                { value: '50', text: '50' }, { value: '100', text: '100' }
+            ]);
+
+
+            // Close dropdowns when clicking outside
+            $(document).on('click', function(e) {
+                if (!$tagContainer.is(e.target) && $tagContainer.has(e.target).length === 0) {
+                    $tagDropdown.addClass('hidden');
+                }
+                if (!$('#itemsPerPageDropdownGrid').is(e.target) && $('#itemsPerPageDropdownGrid').has(e.target).length === 0) {
+                    $('#itemsPerPageOptionsGrid').addClass('hidden');
+                }
+                if (!$('#itemsPerPageDropdownList').is(e.target) && $('#itemsPerPageDropdownList').has(e.target).length === 0) {
+                    $('#itemsPerPageOptionsList').addClass('hidden');
+                }
+            });
+
             $('.view-btn').on('click', function() {
                 currentView = $(this).attr('id').replace('view-', '');
                 $('.view-btn').removeClass('active');
                 $(this).addClass('active');
-                if (currentView === 'grid') {
-                    $('#itemsPerPageSelectGrid').removeClass('hidden');
-                    $('#itemsPerPageSelectList').addClass('hidden');
-                } else {
-                    $('#itemsPerPageSelectGrid').addClass('hidden');
-                    $('#itemsPerPageSelectList').removeClass('hidden');
-                }
-                renderPage(1);
-            });
 
-            $('.items-per-page-select').on('change', function() {
+                if (currentView === 'grid') {
+                    $('#itemsPerPageDropdownGrid').removeClass('hidden');
+                    $('#itemsPerPageDropdownList').addClass('hidden');
+                } else {
+                    $('#itemsPerPageDropdownGrid').addClass('hidden');
+                    $('#itemsPerPageDropdownList').removeClass('hidden');
+                }
                 renderPage(1);
             });
 
