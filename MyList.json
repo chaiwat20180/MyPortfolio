@@ -75,5 +75,28 @@
     ],
     "tags": ["Resource", "Programming", "E-book", "PDF"],
     "IsActive": true
+  },
+  {
+    "title": "Online Courses",
+    "name": "รวมคอร์สออนไลน์แจกฟรีที่นี่ สำหรับผู้ที่ติดต่อมาเท่านั้น",
+    "ImagePreview": "images/OnlineCourses.png",
+    "detail": "แหล่งรวมคอร์สออนไลน์แจกฟรีที่นี่ ฟรี! มีอัพเดทเรื่อยๆ",
+    "Links": [
+      { "name": "Web Page", "url": "https://chaiwat20180.github.io/OnlineCourses/" }
+    ],
+    "tags": ["Language", "English", "OnlineCourses", "PDF"],
+    "IsActive": true
+  },
+  {
+    "title": "PreviewFiles",
+    "name": "เว็บสำหรับการอัพโหลดไฟล์, ฟรีวิว และแชร์",
+    "ImagePreview": "images/PreviewFile.png",
+    "detail": "รองรับเฉพาะ PDF, HTML, IMAGE",
+    "Links": [
+      { "name": "Web Page", "url": "https://chaiwat20180.github.io/PreviewFile/" }
+    ],
+    "tags": ["Tools", "HTML", "IMAGE", "PDF", "Preview"],
+    "IsActive": true
   }
 ]
+
