@@ -1,638 +1,1316 @@
 <!DOCTYPE html>
-<html lang="th" class="">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Portfolio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Google Drive Uploader & Preview</title>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        // This script enables the class-based dark mode, allowing the theme-toggle button to work.
         tailwind.config = {
-            darkMode: 'class'
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6', 
+                        secondary: '#10b981', 
+                        danger: '#ef4444', 
+                        // Dynamic Colors mapped to CSS Variables
+                        main: 'var(--bg-main)',
+                        deep: 'var(--bg-deep)',
+                        surface: 'var(--bg-surface)',
+                        text: 'var(--text-main)',
+                        muted: 'var(--text-muted)',
+                        border: 'var(--border-color)',
+                        hover: 'var(--bg-hover)',
+                    }
+                }
+            }
         }
     </script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Google API Scripts -->
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="https://accounts.google.com/gsi/client"></script>
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
     <style>
-        /* ใช้ฟอนต์ Sarabun เป็นหลัก */
-        body {
-            font-family: 'Sarabun', sans-serif;
+        /* Color System Variables */
+        :root {
+            /* Light Mode (Default) */
+            --bg-main: #f8fafc;       /* Slate 50 */
+            --bg-deep: #ffffff;       /* White */
+            --bg-surface: #ffffff;    /* White */
+            --text-main: #0f172a;     /* Slate 900 */
+            --text-muted: #64748b;    /* Slate 500 */
+            --border-color: #e2e8f0;  /* Slate 200 */
+            --bg-hover: #f1f5f9;      /* Slate 100 */
         }
-        /* ซ่อน scrollbar เริ่มต้น (จะใช้ custom แทน) */
-        .modal-content::-webkit-scrollbar {
-            display: none;
+
+        [data-theme='dark'] {
+            /* Dark Mode */
+            --bg-main: #0f172a;       /* Slate 900 */
+            --bg-deep: #020617;       /* Slate 950 */
+            --bg-surface: #1e293b;    /* Slate 800 */
+            --text-main: #f1f5f9;     /* Slate 100 */
+            --text-muted: #94a3b8;    /* Slate 400 */
+            --border-color: #334155;  /* Slate 700 */
+            --bg-hover: #334155;      /* Slate 700 */
         }
-        .modal-content {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+
+        body { 
+            font-family: 'Kanit', sans-serif; 
+            background-color: var(--bg-main); 
+            color: var(--text-main); 
+            -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.3s, color 0.3s;
         }
-        /* สไตล์สำหรับปุ่มที่ active */
-        .view-btn.active {
-            background-color: #3B82F6; /* bg-blue-600 */
-            color: white;
-        }
-        .dark .view-btn.active {
-            background-color: #2563EB; /* bg-blue-700 */
-        }
+
+        .glass-panel { background: var(--bg-surface); backdrop-filter: blur(10px); }
         
-        /* Animation สำหรับการ์ด */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .loader { border: 3px solid var(--border-color); border-top: 3px solid #3b82f6; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        .loader-lg { width: 48px; height: 48px; border-width: 4px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+        
+        /* Background Pattern */
+        .bg-pattern {
+            background-image: radial-gradient(var(--border-color) 1px, transparent 1px);
+            background-size: 20px 20px;
         }
-        .item-card-animate {
-            opacity: 0; /* เริ่มต้นด้วยการซ่อน */
-            animation: fadeInUp 0.5s ease-out forwards;
+        @keyframes bounce-slow {
+            0%, 100% { transform: translateY(-5%); }
+            50% { transform: translateY(5%); }
         }
-        .copyright {
-            text-align: center;
-            margin-top: 50px;
-            font-size: 0.9rem;
-            color: #888;
+        .animate-bounce-slow {
+            animation: bounce-slow 3s infinite ease-in-out;
         }
-
-        /* --- NEW: Custom Scrollbar Styles --- */
-        /* Works on Firefox */
-        * {
-          scrollbar-width: thin;
-          scrollbar-color: #A0AEC0 #E2E8F0; /* thumb track */
+        .animate-fade-in {
+            animation: fadeIn 0.2s ease-out;
         }
-        .dark * {
-          scrollbar-color: #4A5568 #2D3748; /* thumb track */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
-
-        /* Works on Chrome, Edge, and Safari */
-        ::-webkit-scrollbar {
-          width: 8px;
-          height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-          background: #E2E8F0; /* light mode track */
-          border-radius: 10px;
-        }
-        .dark ::-webkit-scrollbar-track {
-          background: #2D3748; /* dark mode track */
-        }
-        ::-webkit-scrollbar-thumb {
-          background-color: #A0AEC0; /* light mode thumb */
-          border-radius: 10px;
-          border: 2px solid #E2E8F0; /* light mode track */
-        }
-        .dark ::-webkit-scrollbar-thumb {
-          background-color: #4A5568; /* dark mode thumb */
-          border: 2px solid #2D3748; /* dark mode track */
-        }
-        ::-webkit-scrollbar-thumb:hover {
-          background-color: #718096; /* light mode thumb hover */
-        }
-        .dark ::-webkit-scrollbar-thumb:hover {
-          background-color: #718096; /* dark mode thumb hover */
-        }
-        /* --- END: Custom Scrollbar Styles --- */
-
     </style>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-300">
+<body>
 
-    <nav class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-md sticky top-0 z-40 transition-colors duration-300">
-        <div class="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex-shrink-0">
-                    <a href="index.html"><h1 class="text-xl md:text-2xl font-bold text-blue-600 dark:text-blue-400">My Portfolio</h1></a>
-                </div>
-                <div class="flex items-center gap-2 sm:gap-4">
-                    <button id="donate-btn" type="button" class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-pink-500" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
-                        </svg>
-                        <span class="hidden sm:inline">สนับสนุน</span>
-                    </button>
-                    <button id="theme-toggle" type="button" class="text-gray-500 dark:text-gray-400 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5">
-                        <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5 text-gray-800" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
-                        <svg id="theme-toggle-light-icon" class="hidden w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </nav>
+<div id="root"></div>
 
-    <main class="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-8">
-        <div class="flex flex-col lg:flex-row justify-between items-center mb-6 gap-4">
-            <!-- MODIFIED: Container for all filters + search -->
-            <div class="flex flex-col sm:flex-row flex-wrap items-center gap-4 w-full">
-                <!-- Search Bar -->
-                <div class="relative w-full sm:w-auto sm:flex-grow lg:flex-grow-0 lg:w-64">
-                    <input id="searchInput" type="text" placeholder="ค้นหา..." class="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md py-2 pl-4 pr-10 focus:outline-none focus:bg-white dark:focus:bg-gray-800 focus:border-blue-500 dark:focus:border-blue-500 transition-colors duration-300 min-h-[42px] shadow-sm">
-                    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                        <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
-                        </svg>
-                    </div>
-                </div>
-                <!-- ประเภท Filter -->
-                <div class="flex items-center gap-2 w-full sm:w-auto">
-                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">ประเภท:</label>
-                    <div class="relative w-full sm:w-64" id="multi-select-tag-container">
-                        <div id="tagSelectDisplay" class="flex items-center flex-wrap gap-1 w-full min-h-[42px] rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus-within:border-indigo-300 focus-within:ring focus-within:ring-indigo-200 focus-within:ring-opacity-50 text-sm cursor-pointer p-2">
-                            <span id="tagPlaceholder" class="text-gray-500 dark:text-gray-400">ทั้งหมด</span>
-                        </div>
-                        <div id="tagDropdown" class="absolute hidden mt-1 w-full rounded-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-lg z-50">
-                            <div class="p-2 border-b border-gray-200 dark:border-gray-600">
-                                 <input type="text" id="tagSearchInput" placeholder="ค้นหาแท็ก..." class="bg-gray-50 dark:bg-gray-700 outline-none w-full py-2 px-3 rounded-md text-gray-800 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400 border border-gray-300 dark:border-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                            </div>
-                            <div id="tagOptionsContainer" class="max-h-48 overflow-y-auto p-1">
-                                <!-- Checkbox options will be populated by JS -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- จำนวน Filter -->
-                <div class="flex items-center gap-2 w-full sm:w-auto">
-                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">จำนวน:</label>
-                    <div id="itemsPerPageDropdownGrid" class="relative w-full sm:w-28">
-                        <div id="itemsPerPageDisplayGrid" class="flex items-center justify-between w-full min-h-[42px] rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus-within:border-indigo-300 focus-within:ring focus-within:ring-indigo-200 focus-within:ring-opacity-50 text-sm cursor-pointer px-3 py-2">
-                            <span class="selected-value">9</span>
-                            <svg class="fill-current h-4 w-4 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-                        </div>
-                        <div id="itemsPerPageOptionsGrid" class="absolute hidden mt-1 w-full rounded-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-lg z-50 p-1"></div>
-                    </div>
-                    <div id="itemsPerPageDropdownList" class="relative w-full sm:w-28 hidden">
-                         <div id="itemsPerPageDisplayList" class="flex items-center justify-between w-full min-h-[42px] rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 shadow-sm focus-within:border-indigo-300 focus-within:ring focus-within:ring-indigo-200 focus-within:ring-opacity-50 text-sm cursor-pointer px-3 py-2">
-                            <span class="selected-value">10</span>
-                            <svg class="fill-current h-4 w-4 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-                        </div>
-                        <div id="itemsPerPageOptionsList" class="absolute hidden mt-1 w-full rounded-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-lg z-50 p-1"></div>
-                    </div>
-                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">รายการ</span>
-                </div>
-            </div>
-            <!-- View Buttons -->
-            <div class="inline-flex rounded-md shadow-sm flex-shrink-0" role="group">
-                <button type="button" id="view-grid" class="view-btn active rounded-l-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium px-4 py-2 text-gray-900 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 focus:z-10 focus:ring-2 focus:ring-blue-500">
-                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
-                </button>
-                <button type="button" id="view-list" class="view-btn rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm font-medium px-4 py-2 text-gray-900 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 focus:z-10 focus:ring-2 focus:ring-blue-500">
-                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" /></svg>
-                </button>
-            </div>
-        </div>
+<script type="text/babel">
 
-        <div id="gallery">
-            </div>
+    // --- CONFIGURATION (OBFUSCATED) ---
+    const _d = (arr) => arr.map(c => String.fromCharCode(c)).join('');
 
-        <div id="noResults" class="hidden text-center py-16">
-            <h2 class="text-2xl font-semibold text-gray-500 dark:text-gray-400">ไม่พบผลลัพธ์ที่ตรงกัน</h2>
-            <p class="text-gray-400 mt-2">ลองใช้คำค้นหาหรือตัวกรองอื่น</p>
-        </div>
+    // Encoded Credentials (ASCII)
+    const API_KEY = _d([65,73,122,97,83,121,67,83,104,84,72,108,86,50,111,70,114,55,81,77,78,101,116,71,56,49,86,95,120,57,57,122,101,68,88,66,85,116,85]);
+    const CLIENT_ID = _d([56,51,57,48,49,52,50,51,54,56,54,48,45,112,102,98,54,48,110,107,108,55,107,108,112,101,106,50,98,102,54,55,116,115,104,53,113,104,106,110,116,116,101,105,57,46,97,112,112,115,46,103,111,111,103,108,101,117,115,101,114,99,111,110,116,101,110,116,46,99,111,109]);
+    const SCOPES = _d([104,116,116,112,115,58,47,47,119,119,119,46,103,111,111,103,108,101,97,112,105,115,46,99,111,109,47,97,117,116,104,47,100,114,105,118,101,46,102,105,108,101]);
+    const FOLDER_NAME = _d([85,112,108,111,97,100,70,105,108,101]);
+    const DISCOVERY_DOC = _d([104,116,116,112,115,58,47,47,119,119,119,46,103,111,111,103,108,101,97,112,105,115,46,99,111,109,47,100,105,115,99,111,118,101,114,121,47,118,49,47,97,112,105,115,47,100,114,105,118,101,47,118,51,47,114,101,115,116]);
+    const REDIRECT_URL = 'https://chaiwat20180.github.io/PreviewFile/';
 
-        <div id="pagination" class="flex justify-center items-center space-x-1 sm:space-x-2 mt-12">
-            </div>
-        <div class="copyright">
-                &copy; <span id="currentYear"></span> <a href="https://github.com/chaiwat20180" class="text-decoration-none text-blue-600">Chaiwat Kwanta</a> All rights reserved.
-        </div>
-    </main>
+    // --- COMPONENTS ---
+    
+    const FileIcon = ({ mimeType }) => {
+        const type = mimeType || '';
+        let iconClass = "fa-file text-muted";
+        if (type.includes('image')) iconClass = "fa-file-image text-purple-500";
+        else if (type.includes('pdf')) iconClass = "fa-file-pdf text-red-500";
+        else if (type.includes('html')) iconClass = "fa-brands fa-html5 text-orange-500";
+        else if (type.includes('video')) iconClass = "fa-file-video text-blue-500";
+        else if (type.includes('folder')) iconClass = "fa-folder text-yellow-500";
+        
+        return <i className={`fas ${iconClass} text-xl`}></i>;
+    };
 
-    <div id="itemModal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden opacity-0 transition-opacity duration-300">
-        <div id="modal-content-wrapper" class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col md:flex-row overflow-hidden transform scale-95 transition-transform duration-300">
-            <div id="modalImageContainer" class="group w-full md:w-1/2 h-64 md:h-auto bg-gray-200 dark:bg-gray-700 overflow-hidden">
-                </div>
-            <div class="w-full md:w-1/2 p-6 flex flex-col modal-content overflow-y-auto">
-                <div class="flex-grow">
-                    <h2 id="modalTitle" class="text-3xl font-bold mb-1 text-gray-900 dark:text-white"></h2>
-                    <p id="modalName" class="text-gray-500 dark:text-gray-400 mb-4"></p>
-                    <div id="modalTags" class="flex flex-wrap gap-2 mb-4"></div>
-                    <p id="modalDetail" class="text-gray-700 dark:text-gray-300 mb-6"></p>
-                </div>
-                <div class="flex-shrink-0">
-                    <h3 class="font-semibold mb-2 text-gray-800 dark:text-gray-200">ลิงก์ที่เกี่ยวข้อง:</h3>
-                    <div id="modalLinks" class="flex flex-wrap gap-3">
-                        </div>
-                </div>
-            </div>
-        </div>
-        <button id="closeModalBtn" class="absolute top-4 right-4 text-white/80 hover:text-white transition">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-    </div>
+    const App = () => {
+        const [user, setUser] = React.useState(null); // true if logged in
+        const [isGuest, setIsGuest] = React.useState(false); // New: Guest mode state
+        const [isSharedView, setIsSharedView] = React.useState(false); // New: Shared view mode
+        const [userId, setUserId] = React.useState(null); // Unique User ID from Google
+        const [tokenClient, setTokenClient] = React.useState(null);
+        const [gapiInited, setGapiInited] = React.useState(false);
+        const [gisInited, setGisInited] = React.useState(false);
+        const [files, setFiles] = React.useState([]);
+        const [uploading, setUploading] = React.useState(false);
+        const [previewFile, setPreviewFile] = React.useState(null); 
+        const [isFullScreen, setIsFullScreen] = React.useState(false);
+        const [previewLoading, setPreviewLoading] = React.useState(false);
+        const [isDarkMode, setIsDarkMode] = React.useState(true);
+        const [deletingId, setDeletingId] = React.useState(null);
+        const [isClearing, setIsClearing] = React.useState(false);
+        const [sharingId, setSharingId] = React.useState(null);
+        
+        // Image Manipulation State
+        const [imgScale, setImgScale] = React.useState(1);
+        const [imgRotate, setImgRotate] = React.useState(0);
+        const [pan, setPan] = React.useState({ x: 0, y: 0 });
+        const [isDragging, setIsDragging] = React.useState(false);
+        const [dragStart, setDragStart] = React.useState({ x: 0, y: 0 });
 
-    <div id="donateModal" class="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50 hidden opacity-0 transition-opacity duration-300">
-        <div id="donate-modal-content" class="bg-white dark:bg-gray-800 rounded-lg shadow-2xl w-full max-w-md p-6 text-center transform scale-95 transition-transform duration-300 relative">
-            <button id="closeDonateModalBtn" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
-            <h2 class="text-2xl font-bold mb-2 text-gray-900 dark:text-white">สนับสนุนผลงาน</h2>
-            <p class="text-gray-600 dark:text-gray-400 mb-4">สแกน QR Code เพื่อสนับสนุนในการสร้างเครื่องมือใหม่ๆ ขอบคุณครับ!</p>
-            <div class="bg-white p-4 rounded-lg">
-                <img src="images/PromPay.jpg" alt="QR Code for Donation" class="w-full h-auto rounded-md mx-auto">
-            </div>
-        </div>
-    </div>
-
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            let allItems = [];
-            let filteredItems = [];
-            let currentPage = 1;
-            let currentView = 'grid';
-            let selectedTags = [];
-
-            const fallbackColors = [
-                'bg-blue-500', 'bg-indigo-500', 'bg-purple-500', 'bg-pink-500',
-                'bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500'
-            ];
-
-            // --- THEME TOGGLE LOGIC ---
-            const themeToggleBtn = $('#theme-toggle');
-            const themeToggleDarkIcon = $('#theme-toggle-dark-icon');
-            const themeToggleLightIcon = $('#theme-toggle-light-icon');
-
-            $('#currentYear').text(`2024 - ${new Date().getFullYear()}`);
-
-            if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                $('html').addClass('dark');
-                themeToggleLightIcon.removeClass('hidden');
+        // --- THEME LOGIC ---
+        React.useEffect(() => {
+            const root = document.documentElement;
+            if (isDarkMode) {
+                root.setAttribute('data-theme', 'dark');
             } else {
-                $('html').removeClass('dark');
-                themeToggleDarkIcon.removeClass('hidden');
+                root.setAttribute('data-theme', 'light');
             }
+        }, [isDarkMode]);
 
-            themeToggleBtn.on('click', function() {
-                themeToggleDarkIcon.toggleClass('hidden');
-                themeToggleLightIcon.toggleClass('hidden');
-                $('html').toggleClass('dark');
-                if ($('html').hasClass('dark')) {
-                    localStorage.setItem('color-theme', 'dark');
+        const toggleTheme = () => {
+            setIsDarkMode(!isDarkMode);
+        };
+
+        // --- DRIVE HELPER FUNCTIONS ---
+        const getOrCreateFolder = async () => {
+            try {
+                const q = `mimeType='application/vnd.google-apps.folder' and name='${FOLDER_NAME}' and trashed=false`;
+                const response = await gapi.client.drive.files.list({
+                    q: q,
+                    fields: 'files(id, name)',
+                    spaces: 'drive',
+                });
+
+                if (response.result.files.length > 0) {
+                    return response.result.files[0].id;
                 } else {
-                    localStorage.setItem('color-theme', 'light');
+                    const fileMetadata = {
+                        name: FOLDER_NAME,
+                        mimeType: 'application/vnd.google-apps.folder',
+                    };
+                    const folder = await gapi.client.drive.files.create({
+                        resource: fileMetadata,
+                        fields: 'id',
+                    });
+                    return folder.result.id;
                 }
-            });
+            } catch (err) {
+                console.error("Error getting folder:", err);
+                return null;
+            }
+        };
 
-            // --- Function to populate multi-select tags dropdown ---
-            function populateTags(items) {
-                const tags = new Set();
-                items.forEach(item => {
-                    item.tags.forEach(tag => tags.add(tag));
+        const syncFilesFromDrive = async (uid) => {
+            try {
+                const folderId = await getOrCreateFolder();
+                if (!folderId) return;
+
+                const response = await gapi.client.drive.files.list({
+                    q: `'${folderId}' in parents and trashed=false`,
+                    fields: 'files(id, name, mimeType, webViewLink)',
+                    orderBy: 'createdTime desc',
+                    pageSize: 100 
                 });
 
-                const sortedTags = Array.from(tags).sort();
-                const $tagOptionsContainer = $('#tagOptionsContainer');
-                $tagOptionsContainer.empty(); 
+                const driveFiles = response.result.files.map(file => ({
+                    id: file.id,
+                    name: file.name,
+                    mimeType: file.mimeType,
+                    webViewLink: file.webViewLink,
+                    source: 'drive'
+                }));
 
-                sortedTags.forEach(tag => {
-                    const optionId = `tag-option-${tag.replace(/\s+/g, '-')}`;
-                    const optionHtml = `
-                        <div class="flex items-center p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
-                            <input type="checkbox" id="${optionId}" value="${tag}" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                            <label for="${optionId}" class="ml-3 min-w-0 flex-1 text-sm text-gray-800 dark:text-gray-200 cursor-pointer">${tag}</label>
-                        </div>
-                    `;
-                    $tagOptionsContainer.append(optionHtml);
+                setFiles(driveFiles);
+            } catch (err) {
+                console.error("Sync error:", err);
+            }
+        };
+
+        // --- AUTH & INIT LOGIC ---
+        React.useEffect(() => {
+            const initializeGapiClient = async () => {
+                await gapi.client.init({
+                    apiKey: API_KEY,
+                    discoveryDocs: [DISCOVERY_DOC],
                 });
-            }
+                setGapiInited(true);
+                
+                const urlParams = new URLSearchParams(window.location.search);
+                const sharedId = urlParams.get('id'); // Google Drive ID
+                const sharedUrl = urlParams.get('url'); // Guest Mode URL
+                
+                // Check for existing session
+                const storedToken = localStorage.getItem('gdrive_access_token');
+                const storedGuest = localStorage.getItem('gdrive_guest_mode');
 
-            // 1. Fetch data
-            $.getJSON('MyList.json', function(data) {
-                allItems = data.filter(item => item.IsActive === true);
-                filteredItems = allItems;
-                populateTags(allItems); 
-                renderPage(currentPage);
-            }).fail(function(){
-                $('#gallery').html('<p class="text-red-500 text-center col-span-full">เกิดข้อผิดพลาด: ไม่สามารถโหลดไฟล์ MyList.json ได้</p>');
-            });
-
-            // --- Centralized filter function ---
-            function applyFilters() {
-                const searchTerm = $('#searchInput').val().toLowerCase().trim();
-
-                filteredItems = allItems.filter(item => {
-                    const matchesSearch = (
-                        item.title.toLowerCase().includes(searchTerm) ||
-                        item.name.toLowerCase().includes(searchTerm) ||
-                        item.tags.some(tag => tag.toLowerCase().includes(searchTerm))
-                    );
-                    const matchesTag = (
-                        selectedTags.length === 0 ||
-                        item.tags.some(tag => selectedTags.includes(tag))
-                    );
-                    return matchesSearch && matchesTag;
-                });
-                renderPage(1);
-            }
-
-            // 2. Render functions
-            function getItemsPerPage() {
-                let selection = (currentView === 'grid') 
-                    ? $('#itemsPerPageDropdownGrid').data('value') 
-                    : $('#itemsPerPageDropdownList').data('value');
-                return selection === 'all' ? filteredItems.length : parseInt(selection, 10);
-            }
-
-            function renderPage(page) {
-                currentPage = page;
-                const itemsPerPage = getItemsPerPage();
-                $('#gallery').empty().removeClass();
-                $('#pagination').empty();
-                $('#noResults').addClass('hidden');
-
-                if (filteredItems.length === 0) {
-                    $('#noResults').removeClass('hidden');
-                    return;
-                }
-
-                const startIndex = (page - 1) * itemsPerPage;
-                const endIndex = startIndex + itemsPerPage;
-                const paginatedItems = filteredItems.slice(startIndex, endIndex);
-
-                if (currentView === 'grid') {
-                    renderGridView(paginatedItems, startIndex);
+                if (storedToken) {
+                    try {
+                        gapi.client.setToken({ access_token: storedToken });
+                        setUser(true);
+                        setIsGuest(false);
+                        fetchUserProfile();
+                        
+                        // If logged in, handle shared params by opening preview directly
+                        if (sharedId) {
+                            loadSharedFile(sharedId, true); 
+                        } else if (sharedUrl) {
+                            loadGuestFileFromUrl(sharedUrl);
+                        }
+                    } catch (e) {
+                        console.error("Error restoring token", e);
+                        localStorage.removeItem('gdrive_access_token');
+                    }
+                } else if (storedGuest === 'true') {
+                    // Restore Guest Mode
+                    setIsGuest(true);
+                    setUser(null);
+                    setUserId('guest');
+                    
+                    if (sharedId) {
+                        loadSharedFile(sharedId, true);
+                    } else if (sharedUrl) {
+                        loadGuestFileFromUrl(sharedUrl);
+                    }
                 } else {
-                    renderListView(paginatedItems, startIndex);
+                    // Not logged in
+                    if (sharedId) {
+                        loadSharedFile(sharedId, false);
+                    } else if (sharedUrl) {
+                        loadGuestFileFromUrl(sharedUrl);
+                    }
                 }
-                
-                renderPagination();
-            }
+            };
 
-            function renderGridView(items, startIndex) {
-                $('#gallery').addClass('grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6');
-                items.forEach((item, index) => {
-                    const colorIndex = (startIndex + index) % fallbackColors.length;
-                    const fallbackBg = fallbackColors[colorIndex];
-                    const itemHtml = `
-                        <div class="item-card group bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-lg border border-gray-200 dark:border-gray-700 transform hover:-translate-y-1 hover:shadow-xl dark:hover:shadow-blue-500/20 transition-all duration-300 cursor-pointer flex flex-col item-card-animate" style="animation-delay: ${index * 50}ms" data-index="${allItems.indexOf(item)}">
-                            <div class="h-48 w-full overflow-hidden flex items-center justify-center rounded-t-lg">
-                                ${item.ImagePreview ?
-                                    `<img src="${item.ImagePreview}" alt="${item.title}" class="w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-110" onerror="this.parentElement.innerHTML = '<span class=\'text-white font-bold text-2xl\'>${item.title.charAt(0)}</span>'; this.parentElement.classList.add('${fallbackBg}');">` :
-                                    `<div class="w-full h-full flex items-center justify-center ${fallbackBg}"><span class="text-white font-bold text-4xl">${item.title.charAt(0)}</span></div>`
-                                }
-                            </div>
-                            <div class="p-4 flex flex-col flex-grow">
-                                <h3 class="font-semibold text-lg truncate text-gray-900 dark:text-white" title="${item.title}">${item.title}</h3>
-                                <p class="text-gray-500 dark:text-gray-400 text-sm truncate mb-3" title="${item.name}">${item.name}</p>
-                                <div class="flex-grow"></div>
-                                <div class="flex flex-wrap gap-1 mt-auto pt-2">
-                                    ${item.tags.slice(0, 3).map(tag => `<span class="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-xs font-medium px-2 py-0.5 rounded-full">${tag}</span>`).join('')}
-                                    ${item.tags.length > 3 ? `<span class="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300 text-xs font-medium px-2 py-0.5 rounded-full">+${item.tags.length - 3}</span>` : ''}
-                                </div>
-                            </div>
-                        </div>`;
-                    $('#gallery').append(itemHtml);
-                });
-            }
+            gapi.load('client', initializeGapiClient);
 
-            function renderListView(items, startIndex) {
-                $('#gallery').addClass('flex flex-col space-y-4');
-                 items.forEach((item, index) => {
-                    const colorIndex = (startIndex + index) % fallbackColors.length;
-                    const fallbackBg = fallbackColors[colorIndex];
-                    const itemHtml = `
-                        <div class="item-card group bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl dark:hover:shadow-blue-500/20 transition-all duration-300 cursor-pointer flex item-card-animate" style="animation-delay: ${index * 50}ms" data-index="${allItems.indexOf(item)}">
-                            <div class="flex-shrink-0 h-24 w-24 sm:h-28 sm:w-28 overflow-hidden flex items-center justify-center rounded-l-lg">
-                                ${item.ImagePreview ?
-                                    `<img src="${item.ImagePreview}" alt="${item.title}" class="w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-110" onerror="this.parentElement.innerHTML = '<span class=\'text-white font-bold text-xl\'>${item.title.charAt(0)}</span>'; this.parentElement.classList.add('${fallbackBg}');">` :
-                                    `<div class="w-full h-full flex items-center justify-center ${fallbackBg}"><span class="text-white font-bold text-3xl">${item.title.charAt(0)}</span></div>`
-                                }
-                            </div>
-                            <div class="p-3 sm:p-4 flex flex-col flex-grow justify-center">
-                                <h3 class="font-semibold text-lg sm:text-xl text-gray-900 dark:text-white">${item.title}</h3>
-                                <p class="text-gray-500 dark:text-gray-400 text-sm sm:text-base mb-2">${item.name}</p>
-                                <div class="flex flex-wrap gap-1.5">
-                                    ${item.tags.map(tag => `<span class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-semibold px-2.5 py-0.5 rounded-full">${tag}</span>`).join('')}
-                                </div>
-                            </div>
-                        </div>`;
-                    $('#gallery').append(itemHtml);
-                });
-            }
+            const client = google.accounts.oauth2.initTokenClient({
+                client_id: CLIENT_ID,
+                scope: SCOPES,
+                callback: async (tokenResponse) => {
+                    if (tokenResponse && tokenResponse.access_token) {
+                        localStorage.setItem('gdrive_access_token', tokenResponse.access_token);
+                        window.location.href = REDIRECT_URL;
+                    }
+                },
+            });
+            setTokenClient(client);
+            setGisInited(true);
+        }, []);
 
-            function renderPagination() {
-                const itemsPerPage = getItemsPerPage();
-                if (itemsPerPage >= filteredItems.length) return;
-                const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
-                
-                const prevBtn = `<button class="page-btn px-3 py-2 rounded-md transition-colors ${currentPage === 1 ? 'bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed' : 'bg-white dark:bg-gray-700 hover:bg-blue-50 dark:hover:bg-gray-600'}" ${currentPage === 1 ? 'disabled' : ''} data-page="${currentPage - 1}">&laquo;</button>`;
-                $('#pagination').append(prevBtn);
+        // --- HELPER: GUESS MIME TYPE ---
+        const getMimeTypeFromUrl = (url) => {
+            const ext = url.split('.').pop().toLowerCase();
+            if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext)) return 'image/' + ext;
+            if (['pdf'].includes(ext)) return 'application/pdf';
+            if (['html', 'htm'].includes(ext)) return 'text/html';
+            return 'application/octet-stream';
+        };
 
-                for (let i = 1; i <= totalPages; i++) {
-                    const activeClass = i === currentPage ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-700 hover:bg-blue-50 dark:hover:bg-gray-600';
-                    const pageLink = `<button class="page-btn px-4 py-2 rounded-md text-sm transition-colors ${activeClass}" data-page="${i}">${i}</button>`;
-                    $('#pagination').append(pageLink);
-                }
-
-                const nextBtn = `<button class="page-btn px-3 py-2 rounded-md transition-colors ${currentPage === totalPages ? 'bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-not-allowed' : 'bg-white dark:bg-gray-700 hover:bg-blue-50 dark:hover:bg-gray-600'}" ${currentPage === totalPages ? 'disabled' : ''} data-page="${currentPage + 1}">&raquo;</button>`;
-                $('#pagination').append(nextBtn);
-            }
-
-            // 3. Event Handlers
-            $('#searchInput').on('keyup', applyFilters);
+        // --- FETCH GUEST SHARED FILE (FROM URL param) ---
+        const loadGuestFileFromUrl = async (url) => {
+            const decodedUrl = decodeURIComponent(url);
+            setIsSharedView(true);
+            setPreviewLoading(true);
             
-            // --- Multi-select Dropdown Logic ---
-            const $tagContainer = $('#multi-select-tag-container');
-            const $tagDisplay = $('#tagSelectDisplay');
-            const $tagDropdown = $('#tagDropdown');
-            const $tagSearchInput = $('#tagSearchInput');
-            const $tagOptionsContainer = $('#tagOptionsContainer');
-            const $tagPlaceholder = $('#tagPlaceholder');
+            // Create a dummy file object
+            const fileName = decodedUrl.split('/').pop() || 'Shared Guest File';
+            const mimeType = getMimeTypeFromUrl(fileName);
+            
+            let previewUrl = decodedUrl;
 
-            function updateTagDisplay() {
-                $tagDisplay.find('.tag-badge').remove();
-                if (selectedTags.length === 0) {
-                    $tagPlaceholder.removeClass('hidden');
-                } else {
-                    $tagPlaceholder.addClass('hidden');
-                    selectedTags.forEach(tag => {
-                        $tagDisplay.append(`<span class="tag-badge inline-flex items-center gap-1.5 bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 text-xs font-medium px-2 py-1 rounded-full"><span>${tag}</span></span>`);
-                    });
+            // Fix for HTML files from Litterbox/External sites
+            // They usually serve HTML as text/plain or attachment. We must fetch and blob it as text/html.
+            if (mimeType === 'text/html') {
+                try {
+                    const response = await fetch(decodedUrl);
+                    if (response.ok) {
+                        const text = await response.text();
+                        const blob = new Blob([text], { type: 'text/html' });
+                        previewUrl = URL.createObjectURL(blob);
+                    }
+                } catch (e) {
+                    console.warn("Could not fetch HTML content for preview (CORS?):", e);
+                    // Fallback to original URL if fetch fails
                 }
             }
-
-            $tagDisplay.on('click', () => $tagDropdown.toggleClass('hidden'));
-            $tagOptionsContainer.on('change', 'input[type="checkbox"]', function() {
-                const value = $(this).val();
-                if (this.checked) {
-                    if (!selectedTags.includes(value)) selectedTags.push(value);
-                } else {
-                    selectedTags = selectedTags.filter(tag => tag !== value);
-                }
-                updateTagDisplay();
-                applyFilters();
+            
+            const guestFile = {
+                id: 'guest_shared',
+                name: fileName,
+                mimeType: mimeType,
+                source: 'local', // Treat as local/guest source
+                blobUrl: previewUrl, // Use the potentially modified blobUrl
+                webViewLink: decodedUrl
+            };
+            
+            setFiles([guestFile]);
+            setPreviewFile({ url: previewUrl, type: mimeType, name: fileName });
+            setIsFullScreen(false);
+            setPreviewLoading(false);
+            
+            const Toast = Swal.mixin({
+                toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true
             });
-            $tagSearchInput.on('keyup', function() {
-                const filter = $(this).val().toLowerCase();
-                $tagOptionsContainer.find('.flex').each(function() {
-                    $(this).toggle($(this).find('label').text().toLowerCase().includes(filter));
+            Toast.fire({ icon: 'success', title: 'กำลังดูไฟล์ Guest' });
+        };
+
+        // --- FETCH SHARED FILE (FROM ID param) ---
+        const loadSharedFile = async (id, isAuthenticated) => {
+            setPreviewLoading(true);
+            if (!isAuthenticated) {
+                setIsSharedView(true);
+            }
+            
+            try {
+                if (!gapi.client) await new Promise(r => setTimeout(r, 500));
+
+                const response = await gapi.client.drive.files.get({
+                    fileId: id,
+                    fields: 'id, name, mimeType, webViewLink'
                 });
-            });
-
-            // --- NEW: Generic Custom Select Logic ---
-            function setupCustomSelect(containerId, options) {
-                const $container = $(`#${containerId}`);
-                const $display = $container.find('div:first');
-                const $displayValue = $display.find('.selected-value');
-                const $optionsPanel = $container.find('div:last');
-
-                // Populate options
-                options.forEach(option => {
-                    $optionsPanel.append(`<div class="px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 rounded-md" data-value="${option.value}">${option.text}</div>`);
-                });
-
-                // Set initial state
-                const defaultValue = options.find(o => o.selected)?.value || options[0].value;
-                const defaultText = options.find(o => o.value == defaultValue).text;
-                $container.data('value', defaultValue);
-                $displayValue.text(defaultText);
-
-                // Toggle dropdown
-                $display.on('click', () => $optionsPanel.toggleClass('hidden'));
+                const file = response.result;
                 
-                // Handle option selection
-                $optionsPanel.on('click', 'div', function() {
-                    const value = $(this).data('value');
-                    const text = $(this).text();
-                    $container.data('value', value);
-                    $displayValue.text(text);
-                    $optionsPanel.addClass('hidden');
-                    renderPage(1);
+                if (!isAuthenticated) {
+                    setFiles([file]);
+                } 
+
+                loadFileContentForPreview(file.id, file.mimeType, file.name);
+                
+                const Toast = Swal.mixin({
+                    toast: true, position: 'top-end', showConfirmButton: false, timer: 3000, timerProgressBar: true
                 });
+                Toast.fire({ icon: 'success', title: 'กำลังดูไฟล์ที่แชร์' });
+
+            } catch (err) {
+                console.error("Load shared file error:", err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ไม่สามารถเปิดไฟล์ได้',
+                    text: 'ไฟล์อาจถูกลบ หรือคุณไม่มีสิทธิ์เข้าถึง',
+                    confirmButtonText: 'ตกลง'
+                });
+                setPreviewLoading(false);
+            }
+        };
+
+        // --- USER PROFILE ---
+        const fetchUserProfile = async () => {
+            try {
+                const response = await gapi.client.drive.about.get({
+                    fields: 'user'
+                });
+                const currentUser = response.result.user;
+                const uniqueId = currentUser.permissionId;
+                setUserId(uniqueId);
+                
+                syncFilesFromDrive(uniqueId);
+            } catch (err) {
+                console.error("Error fetching user profile:", err);
+                if (err.status === 401) handleSignoutClick();
+            }
+        };
+
+        const saveHistory = (uid, newFiles) => {
+            if (!uid) return;
+            const historyKey = `gdrive_history_${uid}`;
+            localStorage.setItem(historyKey, JSON.stringify(newFiles));
+        };
+
+        // --- ACTIONS ---
+        const handleAuthClick = () => {
+            if (tokenClient) {
+                tokenClient.requestAccessToken();
+            }
+        };
+
+        const handleGuestClick = () => {
+            localStorage.setItem('gdrive_guest_mode', 'true');
+            window.location.href = REDIRECT_URL;
+        };
+
+        const handleSignoutClick = () => {
+            if (isGuest) {
+                localStorage.removeItem('gdrive_guest_mode');
+            }
+            
+            const token = gapi.client.getToken();
+            if (token !== null) {
+                google.accounts.oauth2.revoke(token.access_token);
+                gapi.client.setToken('');
+            }
+            localStorage.removeItem('gdrive_access_token'); 
+            
+            window.location.href = REDIRECT_URL;
+        };
+
+        const handleClearHistory = async () => {
+            if (files.length === 0) return;
+
+            if (isGuest) {
+                Swal.fire({
+                    title: 'ยืนยันการล้างรายการ?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'ล้าง',
+                    cancelButtonText: 'ยกเลิก'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setFiles([]);
+                        setPreviewFile(null);
+                    }
+                });
+                return;
             }
 
-            // Setup for Items Per Page dropdowns
-            setupCustomSelect('itemsPerPageDropdownGrid', [
-                { value: 'all', text: 'ทั้งหมด' }, { value: '3', text: '3' },
-                { value: '6', text: '6' }, { value: '9', text: '9', selected: true }
-            ]);
-            setupCustomSelect('itemsPerPageDropdownList', [
-                { value: 'all', text: 'ทั้งหมด' }, { value: '5', text: '5' },
-                { value: '10', text: '10', selected: true }, { value: '20', text: '20' },
-                { value: '50', text: '50' }, { value: '100', text: '100' }
-            ]);
+            Swal.fire({
+                title: 'คำเตือน!',
+                text: 'การล้างประวัติจะทำการ "ลบไฟล์จริง" ออกจาก Google Drive ด้วย คุณแน่ใจหรือไม่?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'ลบทั้งหมด',
+                cancelButtonText: 'ยกเลิก'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    setIsClearing(true);
+                    try {
+                        const deletePromises = files.map(file => 
+                            gapi.client.drive.files.delete({ fileId: file.id })
+                                .then(() => true)
+                                .catch(err => {
+                                    console.error(`Failed to delete ${file.id}`, err);
+                                    return false; 
+                                })
+                        );
 
+                        await Promise.all(deletePromises);
 
-            // Close dropdowns when clicking outside
-            $(document).on('click', function(e) {
-                if (!$tagContainer.is(e.target) && $tagContainer.has(e.target).length === 0) {
-                    $tagDropdown.addClass('hidden');
+                        if (userId) syncFilesFromDrive(userId);
+                        else setFiles([]);
+
+                        setPreviewFile(null);
+                        Swal.fire('ลบเสร็จสิ้น!', 'ไฟล์ทั้งหมดถูกลบเรียบร้อยแล้ว', 'success');
+
+                    } catch (err) {
+                        console.error("Clear history error:", err);
+                        Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถลบไฟล์บางรายการได้', 'error');
+                    } finally {
+                        setIsClearing(false);
+                    }
                 }
-                if (!$('#itemsPerPageDropdownGrid').is(e.target) && $('#itemsPerPageDropdownGrid').has(e.target).length === 0) {
-                    $('#itemsPerPageOptionsGrid').addClass('hidden');
-                }
-                if (!$('#itemsPerPageDropdownList').is(e.target) && $('#itemsPerPageDropdownList').has(e.target).length === 0) {
-                    $('#itemsPerPageOptionsList').addClass('hidden');
+            });
+        };
+
+        const handleShareFile = async (e, file) => {
+            e.stopPropagation();
+            
+            // Handle GUEST MODE Sharing (Public Cloud Upload)
+            if (file.source === 'local') {
+                Swal.fire({
+                    title: 'อัปโหลดเพื่อแชร์?',
+                    text: "เนื่องจากคุณไม่ได้ Login ไฟล์จะถูกอัปโหลดไปยัง Cloud สาธารณะ (Litterbox) แบบชั่วคราว (24 ชั่วโมง) เพื่อสร้างลิงก์",
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonText: 'อัปโหลดและแชร์',
+                    cancelButtonText: 'ยกเลิก',
+                    confirmButtonColor: '#10b981'
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        setSharingId(file.id);
+                        Swal.fire({
+                            title: 'กำลังอัปโหลด...',
+                            html: 'กำลังส่งข้อมูลไปยัง Server (Litterbox)...<br><span class="text-xs text-red-400">*หากล้มเหลว อาจเกิดจากข้อจำกัดเครือข่าย/CORS</span>',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        try {
+                            // Convert blob url back to blob/file
+                            const blob = await fetch(file.blobUrl).then(r => r.blob());
+                            const formData = new FormData();
+                            formData.append('reqtype', 'fileupload');
+                            formData.append('time', '24h');
+                            formData.append('fileToUpload', blob, file.name);
+                            
+                            // Upload to Litterbox (Catbox)
+                            const response = await fetch('https://litterbox.catbox.moe/resources/internals/api.php', {
+                                method: 'POST',
+                                body: formData
+                            });
+
+                            if (!response.ok) {
+                                throw new Error(`Server Error: ${response.status}`);
+                            }
+
+                            // Litterbox returns the URL as plain text
+                            const uploadUrl = await response.text();
+                            
+                            if (uploadUrl.startsWith('http')) {
+                                // Create custom share link with ?url parameter
+                                const customShareLink = `${REDIRECT_URL}?url=${encodeURIComponent(uploadUrl)}`;
+
+                                // Auto Copy Logic for Guest
+                                try {
+                                    await navigator.clipboard.writeText(customShareLink);
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'คัดลอกลิงก์แล้ว!',
+                                        html: `<p class="text-sm text-gray-500 mb-2">ลิงก์นี้จะใช้ได้ 24 ชั่วโมง (เปิดดูได้ทันที):</p>
+                                               <input type="text" value="${customShareLink}" class="w-full p-2 border rounded bg-gray-50 text-sm text-center" readonly>`,
+                                        confirmButtonText: 'ตกลง'
+                                    });
+                                } catch (clipErr) {
+                                    // Fallback if auto-copy fails
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'สร้างลิงก์แชร์สำเร็จ!',
+                                        html: `<p class="text-sm mb-2">ลิงก์นี้จะใช้ได้ 24 ชั่วโมง (เปิดดูได้ทันที):</p>
+                                               <input type="text" value="${customShareLink}" class="w-full p-2 border rounded bg-gray-50 text-sm text-center" readonly onclick="this.select()">`,
+                                        confirmButtonText: 'คัดลอกและปิด',
+                                        preConfirm: () => {
+                                            navigator.clipboard.writeText(customShareLink);
+                                        }
+                                    });
+                                }
+                            } else {
+                                throw new Error('Upload failed: ' + uploadUrl);
+                            }
+                        } catch (err) {
+                            console.error("Guest upload error:", err);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'อัปโหลดไม่สำเร็จ (CORS)',
+                                html: `<p class="text-sm text-gray-600 mb-2">${err.message}</p>
+                                       <p class="text-xs text-red-500">คำแนะนำ: ระบบ Guest มีข้อจำกัดเรื่องความปลอดภัยของ Browser (CORS) กับเว็บฝากไฟล์ฟรี <br><b>กรุณา Login ด้วย Google เพื่อแชร์ไฟล์ได้อย่างเสถียรและถาวร</b></p>`,
+                                confirmButtonText: 'ตกลง'
+                            });
+                        } finally {
+                            setSharingId(null);
+                        }
+                    }
+                });
+                return;
+            }
+
+            // Handle DRIVE MODE Sharing (Google Drive)
+            setSharingId(file.id);
+            Swal.fire({
+                title: 'กำลังสร้างลิงก์แชร์...',
+                html: 'กำลังเปิดสิทธิ์การเข้าถึงและคัดลอกลิงก์',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
                 }
             });
 
-            $('.view-btn').on('click', function() {
-                currentView = $(this).attr('id').replace('view-', '');
-                $('.view-btn').removeClass('active');
-                $(this).addClass('active');
-
-                if (currentView === 'grid') {
-                    $('#itemsPerPageDropdownGrid').removeClass('hidden');
-                    $('#itemsPerPageDropdownList').addClass('hidden');
-                } else {
-                    $('#itemsPerPageDropdownGrid').addClass('hidden');
-                    $('#itemsPerPageDropdownList').removeClass('hidden');
-                }
-                renderPage(1);
-            });
-
-            $('#pagination').on('click', '.page-btn', function() {
-                const page = $(this).data('page');
-                renderPage(page);
-                $('html, body').animate({ scrollTop: 0 }, 300);
-            });
-
-            // Item Modal handling
-            $('#gallery').on('click', '.item-card', function() {
-                const item = allItems[$(this).data('index')];
-                $('#modalTitle').text(item.title);
-                $('#modalName').text(item.name);
-                $('#modalDetail').text(item.detail);
-
-                $('#modalImageContainer').empty();
-                if (item.ImagePreview) {
-                    const modalImg = `<img src="${item.ImagePreview}" alt="${item.title}" class="w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-110">`;
-                    $('#modalImageContainer').html(modalImg);
-                } else {
-                    const colorIndex = allItems.indexOf(item) % fallbackColors.length;
-                    const fallbackBg = fallbackColors[colorIndex];
-                    $('#modalImageContainer').html(`<div class="w-full h-full flex items-center justify-center ${fallbackBg}"><span class="text-white font-bold text-6xl">${item.title.charAt(0)}</span></div>`);
-                }
-
-                $('#modalTags').empty();
-                item.tags.forEach(tag => {
-                    $('#modalTags').append(`<span class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-semibold px-2.5 py-0.5 rounded-full">${tag}</span>`);
+            try {
+                const token = gapi.client.getToken().access_token;
+                
+                await fetch(`https://www.googleapis.com/drive/v3/files/${file.id}/permissions`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        role: 'reader',
+                        type: 'anyone'
+                    })
                 });
 
-                $('#modalLinks').empty();
-                if (item.Links && item.Links.length > 0) {
-                    item.Links.forEach(link => {
-                        const linkEl = `
-                            <a href="${link.url}" target="_blank" rel="noopener noreferrer" 
-                               class="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 dark:bg-blue-500 rounded-lg shadow-sm hover:bg-blue-700 dark:hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800 transition-all duration-200">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                                <span>${link.name}</span>
-                            </a>`;
-                        $('#modalLinks').append(linkEl);
+                const customLink = `${REDIRECT_URL}?id=${file.id}`;
+
+                try {
+                    await navigator.clipboard.writeText(customLink);
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'คัดลอกลิงก์แล้ว!',
+                        html: `<p class="text-sm text-gray-500 mb-2">ส่งลิงก์นี้ให้เพื่อนได้เลย:</p>
+                               <input type="text" value="${customLink}" class="w-full p-2 border rounded bg-gray-50 text-sm" readonly>`,
+                        confirmButtonText: 'ตกลง'
                     });
+                } catch (clipErr) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'สร้างลิงก์สำเร็จ',
+                        html: `<p class="text-sm mb-2">กรุณาคัดลอกลิงก์ด้านล่าง:</p>
+                               <input type="text" value="${customLink}" class="w-full p-2 border rounded bg-gray-50 text-sm" readonly>`,
+                        confirmButtonText: 'ตกลง'
+                    });
+                }
+
+            } catch (err) {
+                console.error("Share error:", err);
+                Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถแชร์ไฟล์ได้: ' + (err.result?.error?.message || err.message), 'error');
+            } finally {
+                setSharingId(null);
+            }
+        };
+
+        const handleDeleteFile = async (e, fileId) => {
+            e.stopPropagation(); 
+            
+            if (isGuest) {
+                const updatedFiles = files.filter(f => f.id !== fileId);
+                setFiles(updatedFiles);
+                if (previewFile && files.find(f => f.id === fileId && previewFile.name === f.name)) {
+                    setPreviewFile(null);
+                }
+                return;
+            }
+
+            Swal.fire({
+                title: 'ยืนยันการลบไฟล์?',
+                text: "ไฟล์จะถูกลบจาก Google Drive อย่างถาวร",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'ใช่, ลบเลย',
+                cancelButtonText: 'ยกเลิก'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    setDeletingId(fileId);
+                    try {
+                        await gapi.client.drive.files.delete({
+                            fileId: fileId
+                        });
+
+                        const updatedFiles = files.filter(f => f.id !== fileId);
+                        setFiles(updatedFiles);
+                        if (userId) {
+                            saveHistory(userId, updatedFiles);
+                        }
+
+                        if (previewFile && (previewFile.url.includes(fileId) || (files.find(f => f.id === fileId && previewFile.name === f.name)))) { 
+                            setPreviewFile(null);
+                        }
+                        
+                        const Toast = Swal.mixin({
+                            toast: true, position: 'top-end', showConfirmButton: false, timer: 2000, timerProgressBar: true
+                        });
+                        Toast.fire({ icon: 'success', title: 'ลบไฟล์เรียบร้อย' });
+
+                    } catch (err) {
+                        console.error("Delete error:", err);
+                        Swal.fire('ผิดพลาด', 'ไม่สามารถลบไฟล์ได้', 'error');
+                    } finally {
+                        setDeletingId(null);
+                    }
+                }
+            });
+        };
+
+        const isValidFileType = (file) => {
+            const validTypes = ['text/html', 'application/pdf', 'image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            if (file.name.endsWith('.html') || file.name.endsWith('.htm')) return true;
+            return validTypes.some(type => file.type.includes(type) || file.type.startsWith('image/'));
+        };
+
+        const uploadSingleFile = async (file) => {
+            if (!isValidFileType(file)) return null;
+
+            if (isGuest) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                const localUrl = URL.createObjectURL(file);
+                const newFileObj = {
+                    id: 'local_' + Date.now() + Math.random().toString(36).substr(2, 9),
+                    name: file.name,
+                    mimeType: file.type || 'application/octet-stream',
+                    webViewLink: null,
+                    source: 'local',
+                    blobUrl: localUrl
+                };
+                return newFileObj;
+            } else {
+                const folderId = await getOrCreateFolder();
+                if (!folderId) throw new Error("No folder ID");
+
+                const metadata = {
+                    name: file.name,
+                    mimeType: file.type || 'application/octet-stream',
+                    parents: [folderId],
+                };
+
+                const accessToken = gapi.client.getToken().access_token;
+                const form = new FormData();
+                form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+                form.append('file', file);
+
+                const response = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,mimeType,webViewLink', {
+                    method: 'POST',
+                    headers: new Headers({ 'Authorization': 'Bearer ' + accessToken }),
+                    body: form,
+                });
+
+                if (!response.ok) throw new Error("Upload failed");
+
+                const data = await response.json();
+                
+                return {
+                    id: data.id,
+                    name: data.name,
+                    mimeType: data.mimeType || 'application/octet-stream',
+                    webViewLink: data.webViewLink,
+                    source: 'drive'
+                };
+            }
+        };
+
+        const handleFilesUpload = async (fileList) => {
+            if (!user && !isGuest) {
+                Swal.fire('กรุณาล็อกอิน', 'คุณต้องเข้าสู่ระบบก่อนอัปโหลดไฟล์', 'warning');
+                return;
+            }
+
+            setUploading(true);
+            const filesArray = Array.from(fileList);
+            let successCount = 0;
+
+            try {
+                const uploadPromises = filesArray.map(file => uploadSingleFile(file));
+                const results = await Promise.all(uploadPromises);
+                
+                const newFiles = results.filter(res => res !== null);
+                
+                if (newFiles.length > 0) {
+                    setFiles(prev => {
+                        const updated = [...newFiles, ...prev];
+                        saveHistory(userId, updated);
+                        return updated;
+                    });
+                    const firstFile = newFiles[0];
+                    loadFileContentForPreview(firstFile.id, firstFile.mimeType, firstFile.name, firstFile);
+                }
+
+            } catch (err) {
+                console.error("Upload error:", err);
+                Swal.fire('อัปโหลดล้มเหลว', err.message, 'error');
+            } finally {
+                setUploading(false);
+            }
+        };
+
+        // --- PREVIEW LOGIC ---
+        const loadFileContentForPreview = async (fileId, mimeType, fileName, fileObj = null) => {
+            setPreviewLoading(true);
+            setImgScale(1);
+            setImgRotate(0);
+            setPan({ x: 0, y: 0 }); // Reset Pan
+
+            if (!fileObj) {
+                fileObj = files.find(f => f.id === fileId);
+            }
+
+            const safeType = mimeType || '';
+
+            try {
+                if (fileObj && fileObj.source === 'local') {
+                    setPreviewFile({ url: fileObj.blobUrl, type: safeType, name: fileName });
+                    setIsFullScreen(false);
                 } else {
-                     $('#modalLinks').html('<p class="text-sm text-gray-500 dark:text-gray-400">ไม่มีลิงก์</p>');
+                    let fetchUrl = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`;
+                    let headers = {};
+                    
+                    const tokenObj = gapi.client.getToken();
+                    if (tokenObj && tokenObj.access_token) {
+                        headers['Authorization'] = `Bearer ${tokenObj.access_token}`;
+                    } else {
+                        fetchUrl += `&key=${API_KEY}`;
+                    }
+
+                    const fetchRes = await fetch(fetchUrl, { headers });
+                    
+                    if (!fetchRes.ok) throw new Error("Fetch failed or permission denied");
+
+                    const blob = await fetchRes.blob();
+                    const type = safeType.includes('html') ? 'text/html' : safeType;
+                    const url = URL.createObjectURL(new Blob([blob], { type: type }));
+                    
+                    setPreviewFile({ url, type: safeType, name: fileName });
+                    setIsFullScreen(false);
                 }
 
-                $('#itemModal').removeClass('hidden');
-                setTimeout(() => {
-                    $('#itemModal').removeClass('opacity-0');
-                    $('#modal-content-wrapper').removeClass('scale-95');
-                }, 10);
-            });
+            } catch (err) {
+                console.error("Preview error:", err);
+                Swal.fire('ไม่สามารถโหลดไฟล์ได้', 'ไฟล์อาจเป็นส่วนตัวหรือลิงก์หมดอายุ', 'error');
+                setPreviewFile(null); 
+            } finally {
+                setPreviewLoading(false); 
+            }
+        };
 
-            function closeItemModal() {
-                $('#itemModal').addClass('opacity-0');
-                $('#modal-content-wrapper').addClass('scale-95');
-                setTimeout(() => {
-                    $('#itemModal').addClass('hidden');
-                }, 300);
+        // --- UI HANDLERS ---
+        const onFileChange = (e) => {
+            if (e.target.files && e.target.files.length > 0) {
+                handleFilesUpload(e.target.files);
+            }
+        };
+        
+        const onDrop = (e) => {
+            e.preventDefault();
+            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                handleFilesUpload(e.dataTransfer.files);
+            }
+        };
+
+        const onDragOver = (e) => e.preventDefault();
+
+        // --- IMAGE TOOLS ---
+        const handleZoomIn = () => setImgScale(prev => Math.min(prev + 0.25, 3));
+        const handleZoomOut = () => setImgScale(prev => Math.max(prev - 0.25, 0.5));
+        const handleRotate = () => setImgRotate(prev => prev + 90);
+        const handleResetImg = () => { setImgScale(1); setImgRotate(0); setPan({ x: 0, y: 0 }); };
+        
+        // --- IMAGE PANNING ---
+        const handleMouseDown = (e) => {
+            e.preventDefault();
+            setIsDragging(true);
+            setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
+        };
+        const handleMouseMove = (e) => {
+            if (!isDragging) return;
+            e.preventDefault();
+            setPan({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
+        };
+        const handleMouseUp = () => setIsDragging(false);
+
+        const handleSaveImage = () => {
+            if (!previewFile) return;
+            
+            // If not rotated, download directly
+            if (imgRotate % 360 === 0) {
+                const a = document.createElement('a');
+                a.href = previewFile.url;
+                a.download = previewFile.name;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                return;
             }
 
-            $('#closeModalBtn').on('click', closeItemModal);
-            $('#itemModal').on('click', function(e) {
-                if ($(e.target).is('#itemModal')) {
-                    closeItemModal();
+            // If rotated, use canvas to save
+            const img = new Image();
+            img.src = previewFile.url;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const radians = (imgRotate * Math.PI) / 180;
+                
+                // Swap dims if 90/270
+                if (imgRotate % 180 !== 0) {
+                    canvas.width = img.height;
+                    canvas.height = img.width;
+                } else {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
                 }
-            });
 
-            // Donate Modal Logic
-            $('#donate-btn').on('click', function() {
-                $('#donateModal').removeClass('hidden');
-                setTimeout(() => {
-                    $('#donateModal').removeClass('opacity-0');
-                    $('#donate-modal-content').removeClass('scale-95');
-                }, 10);
-            });
+                ctx.translate(canvas.width / 2, canvas.height / 2);
+                ctx.rotate(radians);
+                ctx.drawImage(img, -img.width / 2, -img.height / 2);
 
-            function closeDonateModal() {
-                $('#donateModal').addClass('opacity-0');
-                $('#donate-modal-content').addClass('scale-95');
-                setTimeout(() => {
-                    $('#donateModal').addClass('hidden');
-                }, 300);
+                canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = previewFile.name;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                });
+            };
+        };
+
+        // --- RENDER ---
+        const renderPreviewContent = () => {
+            if (previewLoading) {
+                return (
+                    <div className="flex flex-col items-center justify-center h-full text-muted">
+                        <div className="loader loader-lg mb-4"></div>
+                        <p>กำลังโหลดตัวอย่าง...</p>
+                    </div>
+                );
             }
 
-            $('#closeDonateModalBtn').on('click', closeDonateModal);
-            $('#donateModal').on('click', function(e) {
-                if ($(e.target).is('#donateModal')) {
-                    closeDonateModal();
-                }
-            });
-        });
-    </script>
+            if (!previewFile) return null;
+            const { type, url } = previewFile;
+
+            if (type.includes('image')) {
+                return (
+                    <div 
+                        className="w-full h-full relative flex items-center justify-center bg-slate-900 overflow-hidden"
+                        onMouseDown={handleMouseDown}
+                        onMouseMove={handleMouseMove}
+                        onMouseUp={handleMouseUp}
+                        onMouseLeave={handleMouseUp}
+                        style={{ cursor: isDragging ? 'grabbing' : (imgScale > 1 ? 'grab' : 'default') }}
+                    >
+                        <div 
+                            className="transition-transform duration-75 ease-out origin-center will-change-transform"
+                            style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${imgScale}) rotate(${imgRotate}deg)` }}
+                        >
+                            <img src={url} alt="Preview" className="max-w-full max-h-[80vh] object-contain shadow-lg pointer-events-none" />
+                        </div>
+                        
+                        {/* Image Floating Toolbar */}
+                        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex gap-2 bg-slate-800/90 p-2 rounded-full shadow-xl border border-slate-700 z-20 text-white">
+                            <button onClick={handleZoomIn} className="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition" title="Zoom In">
+                                <i className="fas fa-search-plus"></i>
+                            </button>
+                            <button onClick={handleZoomOut} className="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition" title="Zoom Out">
+                                <i className="fas fa-search-minus"></i>
+                            </button>
+                            <button onClick={handleRotate} className="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition" title="Rotate">
+                                <i className="fas fa-sync-alt"></i>
+                            </button>
+                            <button onClick={handleResetImg} className="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition" title="Reset">
+                                <i className="fas fa-undo"></i>
+                            </button>
+                            <div className="w-px bg-slate-600 mx-1"></div>
+                            <button onClick={handleSaveImage} className="w-10 h-10 rounded-full hover:bg-primary hover:text-white text-primary flex items-center justify-center transition" title="Save Image">
+                                <i className="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                );
+            } else if (type.includes('pdf')) {
+                // FIXED: Check for external URL to use Google Docs Viewer
+                // Bypass X-Frame-Options for external links
+                const isExternal = url.startsWith('http') && !url.startsWith('blob:');
+                const displayUrl = isExternal 
+                    ? `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(url)}` 
+                    : url;
+
+                return (
+                    <div className="w-full h-full relative group bg-gray-100 flex flex-col items-center justify-center">
+                        <iframe 
+                            src={displayUrl} 
+                            className="w-full h-full bg-white" 
+                            title="PDF Preview"
+                        ></iframe>
+                        
+                        {/* Fallback/Action Button Overlay */}
+                        <div className="absolute bottom-6 right-6 z-20 flex flex-col gap-2 items-end pointer-events-none">
+                             {/* Hint Bubble */}
+                             <div className="bg-black/70 text-white text-xs px-3 py-1.5 rounded-lg backdrop-blur-sm mb-1 pointer-events-auto shadow-sm">
+                                <i className="fas fa-info-circle text-blue-400"></i> หากดูไม่ได้ ให้กดปุ่มด้านล่าง
+                             </div>
+                             <a 
+                                href={url} 
+                                target="_blank" 
+                                rel="noreferrer" 
+                                className="pointer-events-auto bg-primary hover:bg-blue-600 text-white px-5 py-3 rounded-full shadow-xl font-medium text-sm transition transform hover:-translate-y-1 flex items-center gap-2 border border-white/20"
+                             >
+                                <i className="fas fa-external-link-alt"></i> เปิดไฟล์ PDF (เต็มจอ)
+                             </a>
+                        </div>
+                    </div>
+                );
+            } else {
+                return <iframe src={url} className="w-full h-full bg-white" title="HTML Preview" sandbox="allow-scripts allow-same-origin"></iframe>;
+            }
+        };
+
+        return (
+            <div className="min-h-screen flex flex-col relative pb-20 md:pb-0 transition-colors duration-300">
+                
+                {/* Navbar */}
+                <div className="bg-surface sticky top-0 z-30 shadow-md border-b border-border px-4 py-3 flex flex-col md:flex-row justify-between items-center transition-colors duration-300 gap-4">
+                    {/* Logo + Mobile Theme Toggle */}
+                    <div className="flex justify-between items-center w-full md:w-auto gap-3">
+                        <div className="flex items-center gap-3">
+                            <div className="bg-primary/10 p-2 rounded-lg text-primary border border-primary/20">
+                                <i className="fab fa-google-drive text-xl"></i>
+                            </div>
+                            <div>
+                                <h1 className="text-lg font-bold leading-tight text-text">Drive Upload</h1>
+                                <p className="text-xs text-muted flex items-center gap-1">
+                                    {isGuest ? <span className="text-secondary font-medium"><i className="fas fa-user-secret"></i> Guest Mode (Local)</span> : (isSharedView ? <span className="text-primary font-medium"><i className="fas fa-share-alt"></i> Shared View Mode</span> : "HTML, PDF & Image Preview")}
+                                </p>
+                            </div>
+                        </div>
+
+                         {/* Mobile Theme Toggle (Only show on Mobile) */}
+                         <button 
+                            onClick={toggleTheme}
+                            className="w-9 h-9 rounded-full bg-main border border-border text-muted hover:text-primary flex items-center justify-center transition md:hidden"
+                            title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                        >
+                            <i className={`fas ${isDarkMode ? 'fa-sun' : 'fa-moon'}`}></i>
+                        </button>
+                    </div>
+                    
+                    {/* Auth Buttons + Desktop Theme Toggle */}
+                    <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                        
+                        {/* Desktop Theme Toggle (Only show on Desktop) */}
+                        <button 
+                            onClick={toggleTheme}
+                            className="w-9 h-9 rounded-full bg-main border border-border text-muted hover:text-primary items-center justify-center transition hidden md:flex mr-2"
+                            title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                        >
+                            <i className={`fas ${isDarkMode ? 'fa-sun' : 'fa-moon'}`}></i>
+                        </button>
+
+                        {!user && !isGuest ? (
+                            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                                <button 
+                                    onClick={handleGuestClick}
+                                    className="bg-secondary hover:bg-emerald-600 text-white border border-transparent px-4 py-2 rounded-full text-sm font-medium transition active:scale-95 shadow-sm w-full sm:w-auto text-center"
+                                >
+                                    ใช้งานแบบไม่ต้อง Login
+                                </button>
+                                <button 
+                                    onClick={handleAuthClick}
+                                    disabled={!gapiInited || !gisInited}
+                                    className="bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium shadow transition active:scale-95 flex items-center justify-center gap-2 w-full sm:w-auto"
+                                >
+                                    <i className="fab fa-google"></i> <span>เข้าสู่ระบบด้วย Google</span>
+                                </button>
+                            </div>
+                        ) : (
+                            <button 
+                                onClick={handleSignoutClick}
+                                className="bg-danger hover:bg-red-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:text-white transition border border-transparent flex items-center justify-center gap-2 shadow-sm w-full sm:w-auto"
+                                title="Sign Out"
+                            >
+                                <i className="fas fa-sign-out-alt"></i>
+                                {isGuest ? "ออก (Exit Guest)" : "ออกจากระบบ"}
+                            </button>
+                        )}
+                    </div>
+                </div>
+
+                {/* Main Content */}
+                <div className="flex-1 w-full max-w-[95%] mx-auto p-4 md:p-6 grid grid-cols-1 md:grid-cols-12 gap-6">
+                    
+                    {/* Left: Upload & List (Hidden in Shared View) */}
+                    {!isSharedView && (
+                        <div className="md:col-span-4 lg:col-span-3 space-y-6 flex flex-col">
+                            
+                            {/* Upload Card */}
+                            <div className="bg-surface rounded-2xl shadow-lg p-6 text-center border border-border transition-colors duration-300">
+                                {user || isGuest ? (
+                                    <>
+                                        <div 
+                                            onClick={() => document.getElementById('fileInput').click()}
+                                            onDrop={onDrop}
+                                            onDragOver={onDragOver}
+                                            className={`border-2 border-dashed border-border bg-main rounded-xl p-8 cursor-pointer hover:border-primary transition active:scale-95 ${uploading ? 'opacity-50 pointer-events-none' : ''}`}
+                                        >
+                                            <input 
+                                                type="file" 
+                                                id="fileInput" 
+                                                className="hidden" 
+                                                accept=".html,.htm,.pdf,image/*" 
+                                                multiple
+                                                onChange={onFileChange} 
+                                            />
+                                            
+                                            {uploading ? (
+                                                <div className="flex flex-col items-center">
+                                                    <div className="loader mb-3"></div>
+                                                    <span className="text-sm text-primary animate-pulse">กำลังอัปโหลด...</span>
+                                                </div>
+                                            ) : (
+                                                <div className="flex flex-col items-center">
+                                                    <div className="w-14 h-14 bg-surface border border-border text-primary rounded-full flex items-center justify-center mb-3 text-2xl shadow-sm">
+                                                        <i className="fas fa-cloud-upload-alt"></i>
+                                                    </div>
+                                                    <h3 className="font-semibold text-text">แตะเพื่อเลือกไฟล์</h3>
+                                                    <p className="text-xs text-muted mt-1">หรือลากไฟล์มาวางที่นี่</p>
+                                                    <p className="text-[10px] text-muted mt-1">(หลายไฟล์: HTML, PDF, รูปภาพ)</p>
+                                                    {isGuest && <span className="text-[10px] text-secondary mt-2 bg-secondary/10 px-2 py-0.5 rounded">โหมด Guest (Local)</span>}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="py-8 text-muted">
+                                        <i className="fas fa-lock text-4xl mb-2 opacity-30"></i>
+                                        <p className="text-sm">กรุณาเข้าสู่ระบบ หรือเลือกใช้งานแบบไม่ต้อง Login</p>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* File List */}
+                            {(user || isGuest) && (
+                                <div className="bg-surface rounded-2xl shadow-lg border border-border overflow-hidden transition-colors duration-300">
+                                    <div className="px-5 py-3 border-b border-border bg-main flex justify-between items-center">
+                                        <div className="flex items-center gap-2">
+                                            <h3 className="font-semibold text-text text-sm">ไฟล์ล่าสุด</h3>
+                                            <span className="text-xs bg-surface text-primary px-2 py-0.5 rounded-full border border-border">{files.length}</span>
+                                        </div>
+                                        {files.length > 0 && (
+                                            <button 
+                                                onClick={handleClearHistory} 
+                                                disabled={isClearing}
+                                                className={`text-[10px] transition flex items-center gap-1 ${isClearing ? 'text-gray-400 cursor-not-allowed' : 'text-muted hover:text-danger'}`}
+                                            >
+                                                {isClearing ? (
+                                                    <>
+                                                        <i className="fas fa-circle-notch fa-spin"></i> กำลังลบ...
+                                                    </>
+                                                ) : (
+                                                    isGuest ? 'ล้างรายการ' : 'ล้างประวัติ (ลบไฟล์)'
+                                                )}
+                                            </button>
+                                        )}
+                                    </div>
+                                    <div className="max-h-[600px] overflow-y-auto p-2 space-y-1 custom-scrollbar">
+                                        {files.length === 0 ? (
+                                            <div className="text-center py-8 text-muted text-sm">
+                                                ยังไม่มีไฟล์ในรายการ
+                                            </div>
+                                        ) : (
+                                            files.map(file => (
+                                                <div key={file.id} 
+                                                    onClick={() => loadFileContentForPreview(file.id, file.mimeType, file.name, file)}
+                                                    className={`group flex items-center justify-between p-3 rounded-xl cursor-pointer transition border border-transparent 
+                                                        ${previewFile && previewFile.name === file.name ? 'bg-primary/10 border-primary/30' : 'hover:bg-hover hover:border-border'}`}
+                                                >
+                                                    <div className="flex items-center gap-3 overflow-hidden flex-1">
+                                                        <div className="w-8 h-8 rounded-lg bg-main flex items-center justify-center flex-shrink-0 border border-border relative">
+                                                            <FileIcon mimeType={file.mimeType} />
+                                                            {file.source === 'local' && <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-secondary rounded-full border-2 border-surface"></div>}
+                                                        </div>
+                                                        <div className="truncate flex-1">
+                                                            <p className={`text-sm font-medium truncate group-hover:text-primary ${previewFile && previewFile.name === file.name ? 'text-primary' : 'text-text'}`}>
+                                                                {file.name}
+                                                            </p>
+                                                            <p className="text-[10px] text-muted uppercase flex items-center gap-1">
+                                                                {(file.mimeType || '').split('/').pop()}
+                                                                {file.source === 'local' && <span className="text-secondary">• local</span>}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center gap-1">
+                                                        {/* Share Button (Both Drive and Guest) */}
+                                                        <button
+                                                            onClick={(e) => handleShareFile(e, file)}
+                                                            disabled={sharingId === file.id}
+                                                            className={`w-8 h-8 rounded-full bg-transparent text-muted flex items-center justify-center transition-colors ${file.source === 'local' ? 'hover:bg-secondary/10 hover:text-secondary' : 'hover:bg-primary/10 hover:text-primary'}`}
+                                                            title={file.source === 'local' ? "อัปโหลดเพื่อแชร์ (Public Link)" : "แชร์ไฟล์ (Public)"}
+                                                        >
+                                                            {sharingId === file.id ? <i className="fas fa-circle-notch fa-spin text-xs"></i> : <i className={`fas ${file.source === 'local' ? 'fa-cloud-upload-alt' : 'fa-share-alt'} text-xs`}></i>}
+                                                        </button>
+
+                                                        {deletingId === file.id ? (
+                                                            <div className="loader w-4 h-4 border-2"></div>
+                                                        ) : (
+                                                            <button 
+                                                                onClick={(e) => handleDeleteFile(e, file.id)}
+                                                                className="w-8 h-8 rounded-full bg-transparent hover:bg-red-500/10 text-muted hover:text-red-500 flex items-center justify-center transition-colors"
+                                                                title="ลบไฟล์"
+                                                            >
+                                                                <i className="fas fa-trash-alt text-xs"></i>
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Right: Preview */}
+                    <div className={`${isSharedView ? 'col-span-1 md:col-span-12' : 'md:col-span-8 lg:col-span-9'} h-full`}>
+                        {previewFile || previewLoading ? (
+                            <div className="bg-surface rounded-2xl shadow-lg border border-border overflow-hidden flex flex-col h-full min-h-[600px] relative transition-colors duration-300">
+                                {/* Preview Header */}
+                                <div className="px-4 py-3 border-b border-border flex justify-between items-center bg-primary">
+                                    <div className="flex items-center gap-2 overflow-hidden">
+                                        <div className={`w-2 h-2 rounded-full ${previewLoading ? 'bg-yellow-300 animate-pulse' : 'bg-green-400'}`}></div>
+                                        <span className="text-sm font-medium text-white truncate max-w-[150px] md:max-w-md">
+                                            {previewFile ? previewFile.name : 'กำลังโหลด...'}
+                                        </span>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        {previewFile && !previewLoading && (
+                                            <button 
+                                                onClick={() => setIsFullScreen(true)}
+                                                className="bg-blue-900 hover:bg-blue-950 text-white px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5 shadow-sm"
+                                            >
+                                                <i className="fas fa-expand"></i> แสดงเต็มจอ
+                                            </button>
+                                        )}
+                                        <button 
+                                            onClick={() => { setPreviewFile(null); setPreviewLoading(false); setIsSharedView(false); }}
+                                            className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5"
+                                        >
+                                            <i className="fas fa-times"></i> ปิด
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                {/* Preview Body */}
+                                <div className="flex-1 bg-deep relative overflow-auto flex items-center justify-center">
+                                    {renderPreviewContent()}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="bg-surface rounded-2xl shadow-lg border border-border h-full min-h-[600px] flex flex-col items-center justify-center text-center p-6 bg-pattern transition-colors duration-300">
+                                <div className="w-20 h-20 bg-main rounded-full flex items-center justify-center mb-4 animate-bounce-slow border border-border">
+                                    <i className="fas fa-laptop-code text-3xl text-muted"></i>
+                                </div>
+                                <h3 className="text-lg font-semibold text-text">พร้อมแสดงตัวอย่าง</h3>
+                                <p className="text-sm text-muted max-w-xs mt-2">
+                                    {isSharedView ? 'กำลังโหลดไฟล์ที่แชร์...' : 'เลือกไฟล์จากรายการด้านซ้าย หรืออัปโหลดไฟล์ใหม่เพื่อดูตัวอย่าง (HTML, PDF, รูปภาพ)'}
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Full Screen Overlay */}
+                {isFullScreen && previewFile && (
+                    <div className="fixed inset-0 z-50 bg-black flex flex-col animate-fade-in">
+                        <div className="bg-slate-900 text-white px-4 py-3 flex justify-between items-center border-b border-slate-800">
+                            <h2 className="text-sm font-medium flex items-center gap-2 truncate text-slate-200">
+                                <i className="fas fa-eye text-blue-500"></i>
+                                {previewFile.name}
+                            </h2>
+                            <button 
+                                onClick={() => setIsFullScreen(false)}
+                                className="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-sm transition flex items-center gap-2 border border-slate-700"
+                            >
+                                <i className="fas fa-compress"></i> ปิดหน้าต่างเต็มจอ
+                            </button>
+                        </div>
+                        <div className="flex-1 bg-black flex items-center justify-center overflow-hidden">
+                            {renderPreviewContent()}
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+
+</script>
 </body>
 </html>
