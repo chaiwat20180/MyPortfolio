@@ -97,6 +97,17 @@
     ],
     "tags": ["Tools", "HTML", "IMAGE", "PDF", "Preview"],
     "IsActive": true
+  },
+  {
+    "title": "WritingPracticeTemplateGenerator",
+    "name": "เว็บสำหรับสร้างเทมเพลทคัดตัวอักษรภาษาต่างๆ",
+    "ImagePreview": "images/WPTG.png",
+    "detail": "คัดตัวอักษรภาษาต่างๆได้ที่นี่ฟรี!",
+    "Links": [
+      { "name": "Web Page", "url": "https://chaiwat20180.github.io/WritingPracticeTemplateGenerator/" }
+    ],
+    "tags": ["Tools", "Language","Writing"],
+    "IsActive": true
   }
 ]
 
